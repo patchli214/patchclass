@@ -1,0 +1,52 @@
+{% extends "base.html" %}
+{%load filter%}
+{% block content %}
+
+<style>
+  .container{background-color: #fff;}
+
+
+  </style>
+<div style="height:10px;"></div>
+<div style="font-size:20px;padding:5px;"><a style="font-size:14px;" href="{% url 'Teacher:lessonPlan' %}">Home></a>&nbsp;全部课程</div>
+{%for courses in list%}
+<div>
+  {%for course in courses%}
+{% if forloop.counter == 1%}
+{{course.lan|get_name:'lan'}} {{course.level}}<br>
+{%endif%}
+<span style="padding:8px 0 0px 5px;">
+{{forloop.counter}}·<a href="{% url 'Teacher:courseEdit' %}?courseId={{course.id}}">{{course.name}}</a>
+</span>
+  {%endfor%}
+  </div>
+
+{%endfor%}
+
+<div style="padding:10px;">
+  <button><a href="{% url 'Teacher:courseEdit' %}">add new course</a></button>
+  <button><a target="_blank" href="{% url 'Teacher:userLessonSkill' %}">skill deploy</a></button>
+</div>
+
+{% endblock %}
+
+{% block scripts %}
+<script>
+  $(document).ready(function () {
+    console.log($( document ).width());
+    console.log($( window ).width());
+    var wid = $( document ).width();
+    $(".header").css("width",wid);
+    wid = $( window ).width()/3*0.9;
+    $(".week").css("width",wid);
+
+  });
+  //$( ".block" ).animate({ "left": "-=70px" }, "fast" );
+
+
+function goCourse(courseId){
+  var para = "?courseId="+courseId
+  document.location.href="{% url 'Teacher:courseEdit' %}"+para
+}
+</script>
+{% endblock %}

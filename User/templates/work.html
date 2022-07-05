@@ -1,0 +1,54 @@
+{% extends "base.html" %}
+{%load filter%}
+{% block content %}
+<style>
+  .greyBackground{background-color:#ddd;padding:3px;margin:0 0 10px 0;}
+  .yellowBackground{background-color:yellow;padding:3px;margin:0 0 10px 0;}
+</style>
+<div  style="width:100%;margin:0 auto;font-size:20px;text-align:center;padding:16px 0 0 0;">{{course.name}}</div>
+<div  style="width:100%;margin:0 auto;font-size:16px;text-align:center;padding-bottom:10px;">Scratch编程 | {{user.name}}</div>
+
+<div style="width:100%;margin:0 auto;padding-bottom:12px;">
+  <p style="padding-top:8px;font-style:italic;font-weight:bold;">
+  上课时间: {{userLesson.lessonDate|date:"Y-m-d"}}</p>
+  {%if userLesson.mediaType == 'video' %}
+  <center><video width="320" height="240" controls poster="{{userLesson.work}}">
+    <source src="{{userLesson.media}}" type="video/mp4">
+</video></center>
+{%elif userLesson.mediaType == 'image' %}
+<center><img src="{{userLesson.media}}" style="width:100%;" /></center>
+{%else%}
+<a target="_blank" href="{{userLesson.work}}" style="text-decoration:underline;">→作品展示</a>
+{%endif%}
+</div>
+
+<div>
+
+
+  {%if lesson.memo %}{%if lesson.memo != 'None' %}<p><font class="greyBackground">课堂观察</font>&nbsp;{{lesson.memo|default:""}}{%if userLesson.memo != 'None' %}{{userLesson.memo|default:""}}{%endif%}</p>{%endif%}{%endif%}
+  <p class="greyBackground" style="margin:0 0 10px 0;">
+    <b>课程内容：</b><br>
+    {{course.content}}</p>
+  <p><font class="greyBackground">技术</font>&nbsp;{%for s in userLesson.skill%}{{s|get_name:"skill"}}&nbsp;{%endfor%}</p>
+  <p><font class="greyBackground">能力</font>&nbsp;{%for s in userLesson.ability%}{{s|get_name:"ability"}}&nbsp;{%endfor%}</p>
+
+</div>
+<hr>
+<div style="width:100%;text-align:center;font-size:16px;"><a href="https://mp.weixin.qq.com/s/TJi0vnCjJth4mpxBgorraQ">如何加入Patch老师的Scratch编程小课程？</a>
+</div>
+<div style="padding:0px;width:100%;text-align:center"><img src="/static/img/mylogo2.png" style="width:50%" /></div>
+{% endblock %}
+{% block scripts %}
+<script>
+  $(document).ready(function() {
+
+      $("title").html("{{userLesson.lessonDate|date:"n月j日"}}·{{user.name}}的Scratch课-{{course.name}}")
+  })
+</script>
+{% endblock %}
+
+
+
+
+
+db.UserLesson.insert({ "_id" : ObjectId("5f6b6c2f1933d076514b3891"), "user" : ObjectId("5f5435bf2e51485754789334"), "lesson" : ObjectId("5f6ac5f61933d0788d8b2403"), "memo" : "对小车各部分协调运转前进的原理能快速理解，并在程序中实现出来。并且能通过思考和尝试，解决了碰到边缘后回到原始位置并更换背景的逻辑流程，很好地练习了自我钻研解决问题的能力", "theme" : [ "Emulate" ], "skill" : [ "01", "03", "06", "07" ], "ability" : [ "F", "G" ], "lessonDate" : ISODate("2020-09-23T11:00:00Z"), "media" : "https://v.weishi.qq.com/njc_1047_1047_0bc3puadcaaai4afcidlknpro7iegfvaanka.f70.mp4?dis_k=608cdce0c1b040b2f9e1814587824ecf&dis_t=1600883618&pver=8.2.0&fromtag=0&personid=h5&wsadapt=h5_0924015338_353004328_158045702_0_0_0_27_27_0_0_0_0_0&qua=v1_ht5_qz_3.0.0_001_idc_new&appver=30000" })

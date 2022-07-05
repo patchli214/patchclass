@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<!-- This is based on DillingerLee's great template here:
+https://github.com/Team-Code/KA_Offline -->
+<html>
+ <head>
+    <title>Processing.JS inside Webpages: Template</title>
+</head>
+<body>
+
+  <div style="position:relative;width:100%;padding-top:190px;" align="center">
+    <!--div style="width:100%;position:absolute;z-index: 1;padding:20px;"><img src="https://s.go2crm.cn/static/images/me.jpg" /></div-->
+    <div align="center" style="z-index: 2;position:absolute;width:100%;">
+	<!--This draws the Canvas on the webpage -->
+      <main></main>
+    </div>
+  </div>
+  <span id='x'></span><span>|</span><span id='y'></span>
+</body>
+
+ <!-- Run all the JavaScript stuff -->
+ <!-- Include the processing.js library -->
+ <!-- See https://khanacademy.zendesk.com/hc/en-us/articles/202260404-What-parts-of-ProcessingJS-does-Khan-Academy-support- for differences -->
+ <!--script src="https://cdn.jsdelivr.net/processing.js/1.4.8/processing.min.js"></script-->
+ <script src="https://s.go2crm.cn/static/js/p5.min.js"></script>
+
+ <script>
+ let b, x=24;
+ let red = 25,green = 153, blue=123;
+ let img;
+ let i = 0;
+ let j = 0;
+ let balls = [];
+function preload() {
+  img = loadImage('/static/images/spiderman.jpg');
+  //img = loadImage('/static/images/me.jpg');
+}
+ function setup(){
+
+     createCanvas(500,500);
+     for(let i=0;i<30;i++){
+       b = new ball(createVector(x+i*15,13),i);
+       balls.push(b);
+     }
+ }
+ function draw(){
+     background(img,100);
+     fill(0,0,0,0);
+     stroke(0);
+     rect(20,13,464,443);
+     for(let i=0;i<30;i++){
+          balls[i].run();
+     }
+
+}
+let ball=function(position,j){
+    this.position=position.copy();
+}
+ball.prototype.run=function(){
+    this.j=this.j+1;
+    fill(0, 0, 0);
+    noStroke();
+    circle(this.position.x,this.position.y,((Math.sin(this.j/23.0))*10+20));
+    if(x>484&&y<460){
+      red = red - 0.3;
+      green = green - 0.3;
+      blue = blue - 0.3;
+    }
+    if(this.position.x<484&&this.position.y<14){
+       if(this.position.x<26){
+           this.j=0;
+           red = 25;
+           green = 153;
+           blue=123;
+       }
+       this.position.x = this.position.x + 3;
+       red = red + 0.5;
+       green = green + 0.5;
+       blue = blue + 0.5;
+    }
+
+    if(this.position.x>0&&this.position.y>456){
+       this.position.x = this.position.x -3;
+       red = red + 0.3;
+       green = green + 0.3;
+       blue = blue + 0.3;
+   }
+    if(this.position.x<24&&this.position.y>14){
+       this.position.y = this.position.y - 3;
+       red = red - 0.5;
+       green = green - 0.5;
+       blue = blue - 0.5;
+
+   }
+   if(this.position.x>484&&this.position.y<460){
+      this.position.y = this.position.y + 3;
+      red = red - 0.5;
+      green = green - 0.5;
+      blue = blue - 0.5;
+
+  }
+}
+
+ </script>
+
+</html>

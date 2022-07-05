@@ -1,0 +1,111 @@
+{% extends "base.html" %}
+{%load filter%}
+{% load tz %}
+{% block content %}
+
+<style>
+  .container{background-color: #fff;}
+  body{
+    background-color: #fff;margin:0;padding:0;width:100%;
+
+  }
+  .block {
+    float:left;
+    position: relative;
+    background-color: rgb(145,218,255);
+    left: 0px;
+    width:170px;
+    padding: 5px;
+    margin-left: 1px;
+    border-style: solid;
+    border-color: #FFB600;
+  }
+
+  </style>
+
+  <div class="week" style="float:left;padding:5px;">
+
+  </div>
+
+  <div class="week" style="line-height:20px;vertical-align:top;width:100%;float:left;text-align:center;font-size:20px;font-family:Arial;">
+    <a style="font-size:14px;" href="{% url 'Teacher:lessonPlan' %}?searchDay={{last|date:'Ymd'}}">&#8678; 上一周</a>&nbsp;&nbsp;课 表&nbsp;&nbsp;<a style="font-size:14px;" href="{% url 'Teacher:lessonPlan' %}?searchDay={{next|date:'Ymd'}}">下一周 &#8680;</a></div>
+
+
+
+
+
+<div style="clear:both;"></div>
+<div style="width:1200px;position: absolute;top:76px;">
+  {% for dayplans in lessonPlans %}
+  <div class="block" >
+  {%for plan in dayplans%}
+  <div onclick="goClass('{{plan.id}}')">
+  周{{plan.lessonWeekday|week_name}}
+
+  {% localtime on %}
+  {% timezone "Asia/Shanghai" %}
+
+   {{plan.lessonTime}}&nbsp;&nbsp;(<font style="color:white;font-weight:bold;">{%if plan.lesson %}{{plan.lesson.lessonDate|date:"n月j日"}}{%else%}{{plan.date|date:"n月j日"}}{%endif%}</font>)
+</div>
+
+<div>{{plan.lan|get_name:'lan'}}</div>
+
+
+  <p onclick="goCheckin('{{plan.id}}','{{plan.lesson.id}}','{{plan.date|date:"Y-m-d"}}T{{plan.date|date:"H:i"}}')" style="cursor:pointer;background-color:white;">{%if plan.lesson %}{<b>{{plan.lesson.course.name}}</b>}{%else%}&nbsp;{%endif%}</p>
+  {% endtimezone %}
+  {% endlocaltime %}
+  <p>{%for u in plan.users%}<a href="javascript:goUser('{{u.id}}')">{{u.name}}</a>&nbsp;{%if forloop.counter == 3%}<br>{%endif%}{% endfor %}
+  </p>
+
+  {%endfor%}
+  </div>
+{% endfor %}
+
+
+</div>
+
+
+<div style='position:fixed;bottom:0;padding:10px;'><a href="{% url 'Teacher:courseList' %}">courseList</a> | <a href="{% url 'User:userList' %}">userList</a></div>
+
+{% endblock %}
+
+{% block scripts %}
+<script>
+  $(document).ready(function () {
+    console.log($( document ).width());
+    console.log($( window ).width());
+    var wid = $( document ).width();
+    $(".header").css("width",wid);
+    wid = $( window ).width()/3*0.9;
+    //$(".week").css("width",wid);
+
+  });
+  //$( ".block" ).animate({ "left": "-=70px" }, "fast" );
+$( "#right" ).click(function() {
+  $( ".block" ).animate({ "left": "+=100px" }, "fast" );
+});
+
+$( "#left" ).click(function(){
+  $( ".block" ).animate({ "left": "-=100px" }, "fast" );
+});
+
+function goCheckin(classroomId,lessonId,lessonDate){
+  console.log(lessonDate);
+  var para = "?classroomId="+classroomId+"&lessonDate="+lessonDate
+  if(lessonId!="")
+      para = para + "&lessonId="+lessonId
+  document.location.href="{% url 'Teacher:lessonCheckin' %}"+para
+}
+
+function goUser(userId){
+  var para = "?userId="+userId
+  window.open("{% url 'User:profile' %}"+para)
+
+}
+
+function goClass(classId){
+  var para = "?classroomId="+classId+"&searchDay={{searchDay}}"
+  document.location.href="{% url 'Teacher:editClass' %}"+para
+}
+</script>
+{% endblock %}

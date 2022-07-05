@@ -1,0 +1,109 @@
+{% extends "base2.html" %}
+{%load filter%}
+{% block content %}
+
+<style>
+  .container{background-color: transparent;}
+body{
+  background-image: url('/static/images/{{page}}.jpg');
+  background-size: 100%;
+}
+div{
+  background-color: transparent;
+}
+.datetime{
+  width:100%;text-align:center;background-color: transparent;
+  font-size:16px;
+
+}
+.dot{
+  width:210px;
+}
+</style>
+
+{%if page == 'horse2'%}
+
+
+<audio autoplay id="player">
+<source src="/static/ding.mp3" type="audio/mp3">
+</audio>
+  <!--source src="/static/ding.mp3" type="audio/mpeg"-->
+
+{%endif%}
+
+<div class="datetime" id="date" style="padding-top:86px;"></div>
+<div class="datetime" id="time" style="padding-top:0px;"></div>
+<div class="datetime" id="dot" style="padding-top:6px;"><img class="dot" src="/static/images/dot1.png" /></div>
+{%if page == 'horse2'%}
+<div class="datetime" id="ghost" style="padding-top:20px;padding-left:19px;font-size:23px;color:rgb(51,186,48)">扫码未见异常</div>
+{%endif%}
+<div class="datetime" style="width:92%;padding-top:{%if page == 'horse2'%}175{%else%}228{%endif%}px;text-align:end;">11**************1X</div>
+<div class="datetime" id="checktime" style="width:92%;padding-top:8px;text-align:end;"></div>
+<div class="datetime" id="oktime" style="width:92%;padding-top:8px;text-align:end;padding-bottom:110px;color:rgb(219,57,62);"></div>
+
+{% endblock %}
+
+{% block scripts %}
+<script>
+    var now = new Date();
+var timer = 0
+var timer2 = 0
+function currentTime(){
+  var today = new Date();
+  var month = today.getMonth()+1;
+  var day = today.getDate()
+  if(month<10)month='0'+month
+  if(day<10)day='0'+day
+  var date = today.getFullYear()+'年'+(month)+'月'+day+'日'
+  $('#date').html(date)
+  var hour = today.getHours();if(hour<10)hour='0'+hour
+  var min = today.getMinutes();if(min<10)min='0'+min
+  var sec = today.getSeconds();if(sec<10)sec='0'+sec
+
+  $('#time').html(hour+":"+min+":"+sec)
+  $('#checktime').html(month+"-"+day+' '+"04:47")
+  {%if page == 'horse2'%}
+  var h2 = now.getHours()
+  var m2 = now.getMinutes()
+  if(h2<10)h2='0'+h2
+  if(m2<10)m2='0'+m2
+  $('#checktime').html(month+"-"+day+' '+h2+":"+m2)
+  {%endif%}
+  $('#oktime').html(month+"-"+day+' '+"24:00")
+
+  let t = setTimeout(function(){ currentTime() }, 1000);
+}
+currentTime();
+
+function dots(){
+  timer = timer + 1
+  $('#timer').html(timer)
+  if(timer%2==0)
+      $('#dot').html("<img class='dot' src='/static/images/dot1.png' />")
+  else
+      $('#dot').html("<img class='dot' src='/static/images/dot2.png' />")
+  let t2 = setTimeout(function(){ dots() }, 350);
+}
+dots()
+
+
+{%if page == 'horse2'%}
+
+function ghosts(){
+$('#ghost').animate({"opacity":0},500)
+$('#ghost').animate({"opacity":1},500)
+
+let t3 = setTimeout(function(){ ghosts() }, 1000);
+}
+ghosts()
+
+$("body").click(function(){
+document.getElementById("player").play()
+})
+
+
+
+{%endif%}
+
+</script>
+{% endblock %}

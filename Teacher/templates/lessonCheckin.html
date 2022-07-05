@@ -1,0 +1,149 @@
+{% extends "base.html" %}
+{%load filter%}
+{% load tz %}
+{% block content %}
+{% localtime on %}
+{% timezone "Asia/Shanghai" %}
+  <style>
+
+  body{
+
+    background-color: #fff;margin:0;padding:0;width:100%;
+  }
+  .left{float:left;padding-top:6px;}
+  .right{float:right;padding-right:10px;}
+  .i{font-weight:bold;font-style: italic;}
+  .bold_blue{font-weight:bold;color:blue;}
+  </style>
+<div style="padding-top:10px;">
+  {{lessonDate}}
+  {%if lesson%}<div>{{lesson.lessonDate|date:'n月j日'}} | <button onclick="deleteLesson()">删除</button> </div>{%endif%}
+<div>
+本课内容
+<select id="courseId" onchange="changeCourse()">
+  {%if not course%}<option selected>选择课程</option>{%endif%}
+{%for c in courses%}
+<option value="{{c.id}}" {%if c.id == course.id%}selected=selected{%endif%}>{{c.name}}</option>
+{%endfor%}
+</select>
+<p id="courseContent" style="padding-top:6px;"><pre>{%if course%}{{course.content}}{%endif%}</pre></p>
+</div>
+{%if users%}
+<div style="">
+  课堂记录<textarea id="memo" rows="4" cols="80">{{lesson.memo|default:""}}</textarea>
+</div>
+{%endif%}
+{%for student in users%}
+<div>
+<div class="left"><font class="bold_blue">{{student.name}}</font></div>
+<div class="right">出勤&nbsp;<input type="checkbox" name="userId" value="{{student.id}}" {%if student.lesson%}checked{%endif%}/></div>
+<div style="clear:both;width:97%;background-color:#eeeeee;padding:6px;">
+  <p><font class="i">theme:</font> {%for s in course.theme%}{{ s|get_name:"theme" }}<input type="checkbox" name="{{student.id}}_theme" value="{{s}}" {%for ls in student.lesson.theme%} {%if ls == s%}checked{%endif%}{%endfor%} />&nbsp;{%endfor%}</p>
+  <p><font class="i">extention:</font> {%for s in course.extention%}{{ s|get_name:"extention" }}<input type="checkbox" name="{{student.id}}_extention" value="{{s}}" {%for ls in student.lesson.extention%} {%if ls == s%}checked{%endif%}{%endfor%} />&nbsp;{%endfor%}</p>
+  <p><font class="i">skill:</font> {%for s in course.skill%}{{ s|get_name:"skill" }}<input type="checkbox" name="{{student.id}}_skill" value="{{s}}" {%for ls in student.lesson.skill%} {%if ls == s%}checked{%endif%}{%endfor%} />&nbsp;{%endfor%}</p>
+  <p><font class="i">ability:</font> {%for a in course.ability%}{{ a|get_name:"ability" }}<input type="checkbox" name="{{student.id}}_ability" value="{{a}}" {%for ls in student.lesson.ability%} {%if ls == a%}checked{%endif%}{%endfor%} />&nbsp;{%endfor%}</p>
+  <p><font class="i">作品:</font><input type="text" id="{{student.id}}_work" value="{%if student.lesson.work%}{{student.lesson.work}}{%endif%}"/></p>
+  <p><font class="i">展示:</font><input type="text" id="{{student.id}}_media" value="{%if student.lesson.media%}{{student.lesson.media}}{%endif%}"/></p>
+  <p><font class="i">备忘:</font><textarea id="{{student.id}}_memo" style="width:90%;max-width:400px;">{{student.lesson.memo|default:""}}</textarea></p>
+  </div>
+</div>
+{%endfor%}
+
+<button onclick="checkin()">保存</button>
+
+<div style="height:200px;"></div>
+{% endtimezone %}
+{% endlocaltime %}
+
+{% endblock %}
+
+{% block scripts %}
+<script>
+  function changeCourse(){
+
+    var courseId = $("#courseId").val();
+    var para = "?classroomId={{classroom.id}}&lessonDate={{lessonDate}}&courseId="+courseId
+    {%if lesson%}
+      para = para + "&lessonId={{lesson.id}}"
+    {%endif%}
+
+    document.location.href="{% url 'Teacher:lessonCheckin' %}"+para
+  }
+
+function deleteLesson(){
+  $.post("{% url 'Teacher:api_deleteLesson' %}", {
+
+      "csrfmiddlewaretoken": "{{ csrf_token }}",
+      "lessonId":"{{lesson.id}}"
+
+  }, function (res) {
+      if (res["error"] == 0) {
+          alert("成功");
+          var url = "{% url 'Teacher:lessonPlan' %}";
+          window.location.href = url;
+      } else {
+          alert("失败:" + res["msg"])
+      }
+  });
+}
+
+function checkin(){
+
+  var userID = [];//定义一个空数组
+  $("input[name='userId']:checked").each(function(i){//把所有被选中的复选框的值存入数组
+      userID[i] =$(this).val();
+  });
+  console.log(userID);
+
+  var skill = ''
+  for(var ii = 0;ii<userID.length;ii++){
+    skill = skill + ';' + userID[ii]+',';//定义一个空数组
+    $("input[name='"+userID[ii]+"_theme']:checked").each(function(i){//把所有被选中的复选框的值存入数组
+          skill = skill + "_" + $(this).val();
+    });
+    skill = skill + ',';
+    $("input[name='"+userID[ii]+"_extention']:checked").each(function(i){//把所有被选中的复选框的值存入数组
+          skill = skill + "_" + $(this).val();
+    });
+    skill = skill + ',';
+    $("input[name='"+userID[ii]+"_skill']:checked").each(function(i){//把所有被选中的复选框的值存入数组
+          skill = skill + "_" + $(this).val();
+    });
+    skill = skill + ',';
+    $("input[name='"+userID[ii]+"_ability']:checked").each(function(i){//把所有被选中的复选框的值存入数组
+          skill = skill + "_" + $(this).val();
+    });
+    skill = skill + ',';
+    skill = skill + $("#"+userID[ii]+"_work").val();
+    skill = skill + ',';
+    skill = skill + $("#"+userID[ii]+"_memo").val();
+    skill = skill + ',';
+    skill = skill + $("#"+userID[ii]+"_media").val();
+  }
+
+  console.log(skill);
+
+  $.post("{% url 'Teacher:api_lessonCheckin' %}", {
+
+      "csrfmiddlewaretoken": "{{ csrf_token }}",
+      "lessonId":"{{lesson.id}}",
+      "courseId":$("#courseId").val(),
+      "lessonDate":'{{lessonDate}}',
+      "classroomId":'{{classroom.id}}',
+      "memo":$("#memo").val(),
+      "data": skill
+
+  }, function (res) {
+      if (res["error"] == 0) {
+          alert("成功");
+          var url = "{% url 'Teacher:lessonPlan' %}";
+          window.location.href = url;
+      } else {
+          alert("失败:" + res["msg"])
+      }
+  });
+}
+
+
+</script>
+{% endblock %}

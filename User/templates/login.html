@@ -1,0 +1,51 @@
+{% extends 'base.html' %}
+{% load i18n %}
+{% block content %}
+<style>
+  .l{float:left;margin:10px;}
+  .course{border-radius:10px;height:40px;}
+</style>
+<div style="cursor:pointer;color:#999999">
+  <div class="l"><img class="course" src="/static/img/scratch_logo.png" /></div>
+  <div class="l"><img class="course" src="/static/img/microbit_logo.png"/></div>
+
+</div>
+<center style="clear:both;">
+  <h3>
+    老师登录
+  </h3>
+    {% if uf.errors %}
+        <div class="alert alert-danger">
+            <p>
+                <strong>{{ uf.errors }}</strong>
+            </p>
+        </div>
+    {% endif %}
+    {% if  msg %}
+        <div class="alert alert-danger">
+            <p>
+                <strong>{{ msg }}</strong>
+            </p>
+        </div>
+    {% endif %}
+    <form name="form1" id="form1" style="max-width:300px;" method="post" enctype="multipart/form-data" role="form">
+        {% csrf_token %}
+        {{ uf.as_p }}
+        <input type="hidden" id="openId" name="openId" placeholder="密码"/>
+        <button type="submit" class="btn btn-primary" id="submit">登录</button>
+    </form>
+</center>
+{% endblock %}
+{% block scripts %}
+    <script>
+    var Request = new QueryString();
+    var openId = Request['openId'];
+    $("#openId").val(openId);
+        $(function () {
+            $('form').submit(function () {
+                $('#submit').button('loading');
+            })
+        });
+
+    </script>
+{% endblock %}

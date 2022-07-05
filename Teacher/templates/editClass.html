@@ -1,0 +1,162 @@
+{% extends "base.html" %}
+{%load filter%}
+{% block content %}
+
+    <style>
+      .inputDiv{padding:16px 0 6px 0;}
+    </style>
+
+<div style="margin:0 auto;text-align:center;max-width:500px;">
+    <div class="inputDiv">
+      时间:<select id="lessonWeekday">
+        {% for i in week_list %}
+            <option value={{ i }} {% if i == classroom.lessonWeekday %}selected {% endif %}>
+                周{{ i|week_name }}
+            </option>
+        {% endfor %}
+      </select>
+      <input id="lessonTime" type="text" value="{{ classroom.lessonTime }}"/>
+    </div>
+    <div class="inputDiv">
+      老师:<select id="teacher">
+                    {% for teacher in teachers %}
+                        <option value={{ teacher.id }} {% if classroom.teacher.id == teacher.id %}selected{% endif %}>
+                            {{ teacher.name }}
+                        </option>
+                    {% endfor %}
+      </select>
+    </div>
+    <div class="inputDiv">
+      语言:<select id="lan">
+                        {% for lan,lanName in lans.items %}
+                            <option value={{ lan }} {% if classroom.lan == lan %}selected{% endif %}>
+                                {{ lan|get_name:'lan' }}
+                            </option>
+                        {% endfor %}
+      </select>
+    </div>
+
+
+    <div style="margin: 0 auto;text-align:center;max-width:300px;">
+      <div style="text-align:left;">班级成员<br>
+                <select id="select1" multiple="multiple" style="height: 200px;width: 100px;">
+                    {% if thisStudent %}
+                    <option value='{{thisStudent.id}}'>{{thisStudent.name}}</option>
+                    {% endif %}
+                    {% for student in classroom.users %}
+                        <option value='{{ student.id }}'>{{ student.name }}</option>
+                    {% endfor %}
+                </select>
+                <button id="add" style="">
+                    >>
+                </button>
+                <button id="remove">
+                    <<
+                </button>
+                <select id="no_class_students" multiple="multiple" style="height: 200px;width: 100px;display: none">
+                    {% for student in students %}
+                        <option value={{ student.id }}>{%if not student.name and student.name2%}({{student.name2}}){%endif%}{{ student.name }}</option>
+                    {% endfor %}
+                </select>
+
+                <select id="in_class_students" multiple="multiple" style="height: 200px;width: 100px;display: none">
+                    {% for in_class_student in classStudents %}
+                        <option value={{ in_class_student.id }}>{{ in_class_student.name }}</option>
+                    {% endfor %}
+                </select>
+      </div>
+    </div>
+
+
+
+    <div style="padding:20px;">
+        <button class="btn btn-danger" onclick="save_gradeClass('{{ gradeClass.id }}')">保存</button>
+    </div>
+
+</div>
+{% endblock %}
+
+{% block scripts %}
+    <script>
+
+        var surplus_select = ""; //剩余学生的select
+        $(document).ready(function () {
+
+                $("#gradeClassStudents_tr").show();
+                surplus_select = "#no_class_students";
+                $(surplus_select).show();
+
+
+            });
+
+
+            //上课时间或日程时间
+            $('#lessonTime').datetimepicker({
+                datepicker: false,
+                step: 30,
+                format: 'H:i'
+            });
+
+        $("#add").click(function () {
+            var $option = $("#select1 option:selected");  //获取选中的选项
+            $option.appendTo(surplus_select);  //追加给对方
+            $("#select1").val("");
+            $(surplus_select).val("");
+        });
+        $("#remove").click(function () {
+            var $option = $(surplus_select + " option:selected");
+            $option.appendTo("#select1");
+            console.log($("#select1").val())
+            //$("#select1").val("");
+            //$(surplus_select).val("");
+        });
+
+
+
+        function save_gradeClass(classroomId) {
+
+            var lessonWeekday = $("#lessonWeekday").val();
+            var lessonTime = $("#lessonTime").val();
+            var teacher = $("#teacher").val();
+            var lan = $("#lan").val();
+            var select1 = $("#select1").val();
+
+            var students = [];
+            time = /[0-1]\d|20:[0-5]\d/;
+            if(!time.test(lessonTime)){
+            	alert("时间格式错误！");
+                return;
+            }
+            $.each($("#select1>option"), function (i, v) {
+                students.push($(v).val());
+            });
+            var info = $("#info").val();
+            console.log(JSON.stringify(students));
+
+
+            if (!lessonWeekday || !lessonTime) {
+                alert("请填写完整");
+                return;
+            }
+
+            $.post("{% url 'Teacher:api_editClass' %}", {
+                "classroomId": '{{classroom.id}}',
+                "lessonWeekday": lessonWeekday,
+                "lessonTime": lessonTime,
+                "teacherId": teacher,
+                "studentIds": JSON.stringify(students),
+                "lan": lan
+            }, function (res) {
+                alert(res["msg"]);
+                if(res["error"]==0){
+                    var url = "{% url 'Teacher:lessonPlan' %}?searchDay={{searchDay}}";
+                    window.location.href = url;
+                }
+
+            });
+
+        }
+
+
+    </script>
+{% endblock %}

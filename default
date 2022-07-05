@@ -1,0 +1,82 @@
+upstream django {
+    server unix:///data/PatchClass/PatchClass.sock; # for a file socket
+    #server 127.0.0.1:8000; # for a web port socket (we'll use this first)
+}
+
+# Default server configuration
+#
+server {
+	listen 80;
+  listen [::]:80;
+	server_name test.go2crm.cn s.go2crm.cn;
+
+  location /.well-known  {
+      alias /var/www/html/.well-known;
+  }
+  #root /data/PatchClass;
+	# Add index.php to the list if you are using PHP
+	index index.html index.htm index.nginx-debian.html;
+
+  return 301 https://s.go2crm.cn$request_uri;
+}
+
+server{
+  listen          443 ssl;
+  server_name     s.go2crm.cn;
+
+  ssl_certificate     /etc/letsencrypt/live/s.go2crm.cn/fullchain.pem;
+  ssl_certificate_key /etc/letsencrypt/live/s.go2crm.cn/privkey.pem;
+
+
+
+  index index.html index.htm index.nginx-debian.html;
+  location /favicon.ico {
+      return 301 https://s.go2crm.cn/static/favicon.ico;
+  }
+  location / {
+      uwsgi_pass  django;
+      include     /data/PatchClass/uwsgi_params; # the uwsgi_params file you installed
+  }
+
+  location /.well-known  {
+      alias /var/www/html/.well-known;  #
+  }
+  charset     utf-8;
+
+  # max upload size
+  client_max_body_size 75M;   # adjust to taste
+
+  # Django media
+  location /go_media  {
+      alias /data/PatchClass/media;  # your Django project's media files - amend as required
+  }
+
+  location /static {
+      alias /data/PatchClass/static; # your Django project's static files - amend as required
+  }
+
+}
+
+server{
+    listen 80;
+    listen [::]:80;
+    server_name patch.jieli360.com;
+    root /home/rang/html;
+    index index.html;
+
+    location / {
+    try_files $uri $uri/ =404;
+    }
+}
+
+server{
+    listen 80;
+    listen [::]:80;
+    server_name r.jieli360.com;
+    root /home/rang/html;
+    index index.html;
+
+    location / {
+    try_files $uri $uri/ =404;
+    }
+}

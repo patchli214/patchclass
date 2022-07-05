@@ -1,0 +1,83 @@
+{% extends "base.html" %}
+{%load filter%}
+{% block content %}
+<link rel="stylesheet" href="/static/css/jquery.dataTables.css">
+<style>
+  .container{background-color: #fff;}
+
+
+  </style>
+
+<div style="width:90%;">
+
+<div style="float:left;font-size:20px;padding:5px;max-width:500px;min-width:200px;"><a style="font-size:14px;" href="{% url 'Teacher:lessonPlan' %}">Home></a>
+  &nbsp;{{title}}&nbsp;
+  <font style="font-size:14px;">{%for key,value in other.items%}&nbsp;<a href="{% url 'User:userList' %}{{key}}">{{value}}</a>{%endfor%}</font>
+</div>
+<div style="float:right:margin:10px;padding:5px;">&nbsp;&nbsp;
+  <button><a href="{% url 'User:userEdit' %}">add new user</a></button>
+</div>
+</div>
+<div style="clear:both;">
+<table  id="datatable" class="table table-striped table-bordered">
+  <tr>
+    <th>序号</th><th>名字</th><th>性别</th><th>城市</th><th>年级</th><th>听课数</th><th>在班</th>
+  </tr>
+  {%for user in users%}
+<tr>
+  <td>{{forloop.counter}}</td>
+  <td >
+<a href="{% url 'User:userEdit' %}?userId={{user.id}}">
+  {{user.name}}|{{user.name2|default:''}}</a>
+  </td>
+  <td>{{user.gender|default:''}}</td>
+  <td>{{user.location}}</td>
+  <td>{{user.grade|default:""}}</td>
+  <td><a target="_blank" href="{% url 'User:profile' %}?userId={{user.id}}">{{user.lessons|default:''}}</a></td>
+  <td>{%if user.inClass == 1%}是{%endif%}</td>
+</tr>
+  {%endfor%}
+</table>
+</div>
+<div style="padding:10px;">
+  <button><a href="{% url 'User:userEdit' %}">add new user</a></button>
+</div>
+
+
+
+
+{% endblock %}
+
+{% block scripts %}
+<script>
+
+
+  $(document).ready(function () {
+    console.log($( document ).width());
+    console.log($( window ).width());
+    var wid = $( document ).width();
+    $(".header").css("width",wid);
+    wid = $( window ).width()/3*0.9;
+    $(".week").css("width",wid);
+    $('#datatable').DataTable( {
+      "paging":   false,
+      "searching": false,
+      "info":false,
+      "order": [[ 3, "desc" ]],
+        dom: 'Bfrtip',
+        buttons: [
+            { extend: 'copy', text: '复制' },
+            { extend: 'csv', text: '保存' },
+            { extend: 'print', text: '打印' }
+        ]
+    });
+  });
+  //$( ".block" ).animate({ "left": "-=70px" }, "fast" );
+
+
+function goUser(userId){
+  var para = "?userId="+userId
+  document.location.href="{% url 'User:userEdit' %}"+para
+}
+</script>
+{% endblock %}

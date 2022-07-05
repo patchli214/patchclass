@@ -1,0 +1,56 @@
+{% load static %}
+<html>
+<head>
+
+    <title>Scratch小课堂</title>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
+    <link rel="stylesheet" href="/static/css/bootstrap.min.css">
+    <link rel="stylesheet" href="/static/css/bootstrap-theme.min.css">
+    <link rel="stylesheet" href="/static/css/bootstrap3.4-icons.css">
+    <link rel="stylesheet" href="/static/css/zhenpu.css?tag=2">
+    <style>
+      body{
+        font-family: Arial;
+      }
+      .container{width:100%;}
+      .dark{color:white;}
+    </style>
+    <link rel="stylesheet" href="/static/css/jquery.dataTables.min.css">
+    <link rel="stylesheet" href="/static/js/DateTimePicker/jquery.datetimepicker.css"/>
+
+    <script src="/static/js/jquery2.min.js"></script>
+    <script src="/static/js/bootstrap.min.js"></script>
+    <script src="/static/js/jquery.validate.js"></script>
+    <script src="/static/js/jquery.dataTables.min.js"></script>
+    <!--datetimepicker-->
+    <script src="/static/js/DateTimePicker/build/jquery.datetimepicker.full.min.js"></script>
+    <script src="/static/js/utils.js?ver=20200911"></script>
+    <script src="/static/js/config.js"></script>
+
+</head>
+
+<body>
+  <div class="header" style="width:100%;height:42px;background-color: rgb(77,152,255);">
+    <div style="float:left;">
+      <img src="/static/img/weixinLOGO.jpg" style="border-radius:50%;border:2px solid white;" height="42"/><img src="/static/img/mylogo.png?v=1" height="32"/>
+    </div>
+
+{%if login_teacher%}
+<div style="float:left;padding:10px 0 0 20px;"> | <a class="dark" href="{% url 'Teacher:courseList' %}">courseList</a> | <a class="dark" href="{% url 'User:userList' %}">userList</a></div>
+
+  <div style="float:right;color:white;padding-top:10px;padding-right:6px;">{{login_teacher.name}}</div>
+{%endif%}
+</div>
+<div class="container">
+    {% block content %}内容{% endblock %}
+</div>
+
+{% block scripts %}
+<script>
+
+</script>
+{% endblock %}
+</body>
+</html>

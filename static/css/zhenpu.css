@@ -1,0 +1,10 @@
+body {
+    margin: 0 auto;
+    font-family:Arial;
+    overflow:scroll;
+}
+.activeNav{
+    background:white;
+    color:black;
+    border:1px solid #555555;
+}

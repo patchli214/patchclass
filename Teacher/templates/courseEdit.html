@@ -1,0 +1,113 @@
+{% extends "base.html" %}
+{%load filter%}
+{% block content %}
+<style>
+  .h3p{width:100%;margin:10px 0 0 0 ;background-color:#eee;}
+</style>
+<div style="height:10px;"></div>
+
+<div style="font-size:20px;padding:5px;">name:<input id="name" value="{{course.name}}" /></div>
+
+<div><select id="level">
+  <option value="1" {%if course.level == 1 %}selected{%endif%}>1</option>
+  <option value="2" {%if course.level == 2 %}selected{%endif%}>2</option>
+  <option value="3" {%if course.level == 3 %}selected{%endif%}>3</option>
+</select>
+
+<div>content:
+  <textarea id="content" style="width:98%;height:200px;">{{course.content}}</textarea>
+</div>
+
+<div>
+  <p class="h3p">language:</p>
+  {%for s in lan%}<input name="lan" value="{{s}}"  type="checkbox" {%for sk in course.lan%}{%if sk == s%}checked{%endif%}{%endfor%}/>{{s|get_name:'lan'}}&nbsp;&nbsp;{%endfor%}
+</div>
+<div>
+  <p class="h3p">theme:</p>
+  {%for s in theme%}<input name="theme" value="{{s}}"  type="checkbox" {%for sk in course.theme%}{%if sk == s%}checked{%endif%}{%endfor%}/>{{s|get_name:'theme'}}&nbsp;&nbsp;{%endfor%}
+</div>
+<div>
+  <p class="h3p">extention:</p>
+  {%for s in extention%}<input name="extention" value="{{s}}"  type="checkbox" {%for sk in course.extention%}{%if sk == s%}checked{%endif%}{%endfor%}/>{{s|get_name:'extention'}}&nbsp;&nbsp;{%endfor%}
+</div>
+<div>
+  <p class="h3p">skill:</p>
+  {%for s in skill%}<input name="skill" value="{{s}}" type="checkbox" {%for sk in course.skill%}{%if sk == s%}checked{%endif%}{%endfor%}/>{{s|get_name:'skill'}}&nbsp;&nbsp;{%endfor%}
+</div>
+
+<div>
+  <p class="h3p">sensor:</p>
+  {%for s in sensor%}<input name="sensor" value="{{s}}"  type="checkbox" {%for sk in course.sensor%}{%if sk == s%}checked{%endif%}{%endfor%}/>{{s|get_name:'sensor'}}&nbsp;&nbsp;{%endfor%}
+</div>
+<div>
+  <p class="h3p">output:</p>
+  {%for s in output%}<input name="output" value="{{s}}"  type="checkbox" {%for sk in course.output%}{%if sk == s%}checked{%endif%}{%endfor%}/>{{s|get_name:'output'}}&nbsp;&nbsp;{%endfor%}
+</div>
+
+<div>
+  <p class="h3p">ability:</p>
+  {%for s in ability%}<input name="ability" value="{{s}}" type="checkbox" {%for sk in course.ability%}{%if sk == s%}checked{%endif%}{%endfor%}/>{{s|get_name:'ability'}}&nbsp;&nbsp;{%endfor%}
+</div>
+
+<div><button onclick="saveCourse()">Save</button>
+{% endblock %}
+
+{% block scripts %}
+    <script>
+
+
+        function saveCourse() {
+          var theme = new Array()
+          var lan = new Array()
+          var skill = new Array()
+          var ability = new Array()
+          var extention = new Array()
+          $("input[name='lan']:checked").each(function(i){
+            lan.push($(this).val())
+          })
+          $("input[name='theme']:checked").each(function(i){
+            theme.push($(this).val())
+          })
+          $("input[name='extention']:checked").each(function(i){
+            extention.push($(this).val())
+          })
+          $("input[name='skill']:checked").each(function(i){
+            console.log($(this).val())
+            skill.push($(this).val())
+          })
+          $("input[name='ability']:checked").each(function(i){
+            ability.push($(this).val())
+          })
+
+          var name = $("#name").val();
+          if(name==''){
+                alert('name！');
+                return;
+          }
+          var content = $("#content").val();
+          var level = $("#level").val();
+          alert(skill)
+
+            $.post("{% url 'Teacher:api_courseEdit' %}", {
+                "courseId":'{{course.id}}',
+                "name": name,
+                "content": content,
+                "skill": JSON.stringify(skill),
+                "extention": JSON.stringify(extention),
+                "theme": JSON.stringify(theme),
+                "lan": JSON.stringify(lan),
+                "ability": JSON.stringify(ability),//JSON.stringify(students),
+                "level": level
+            }, function (res) {
+                alert(res["msg"]);
+                if(res["error"]==0){
+                    var url = "{% url 'Teacher:courseList' %}";
+                    window.location.href = url;
+                }
+
+            });
+
+        }
+
+    </script>
+{% endblock %}

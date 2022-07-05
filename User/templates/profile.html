@@ -1,0 +1,76 @@
+{% extends "base.html" %}
+{%load filter%}
+{% block content %}
+<style>
+  .greyBackground{background-color:#ddd;padding:3px;margin:0 0 10px 0;}
+  .yellowBackground{background-color:yellow;padding:3px;margin:0 0 10px 0;}
+</style>
+
+{%if user%}
+<div  style="width:100%;margin:0 auto;font-size:20px;text-align:center;padding:6px;">{{user.name}} 的成长记录</div>
+{%if login_teacher%}<div>{{user.name2}} {{user.gender}} {{user.location}} {{user.birthday|date:"Y-m-d"}} 联系人：{{user.customer1}} (微信号：{{user.c1wechat}}）</div>
+<div style="padding-bottom:10px"><font class="yellowBackground">上课时间{%if user.timezone != 'Asia/Shanghai'%}({{user.timezone}}){%endif%}</font>
+{%for classTime in classrooms%}
+周{{classTime.lessonWeekday|week_name}}&nbsp;{{classTime.lessonTime}}&nbsp;|
+{%endfor%}
+</div>{%endif%}
+<div style="text-align:center;font-weight:bold;"><a href="{% url 'User:userSkill' %}?userId={{user.id}}">→ {技能分布}</a></div>
+<div>
+  {%for l in lessons%}
+  <br>
+
+  【{{forloop.revcounter}}】
+  <a style="cursor:point;" href="{% url 'User:work' %}?userId={{l.user.id}}&lessonId={{l.lesson.id}}" >
+  → {{l.lessonDate|date:"Y-m-d"}}&nbsp;{{l.lesson.course.name}}</a><br>
+  <div style="width:100%;margin:0 auto;text-align:center;">
+    {%if l.mediaType == 'video' %}
+    <video width="320" height="240" controls poster="{{l.work}}">
+      <source src="{{l.media}}" type="video/mp4">
+    </video>
+    {%endif%}
+    {%if l.mediaType == 'image' %}
+    <img src="{{l.media}}" style="width:100%;" />
+    {%endif%}
+  </div>
+  <p class="greyBackground" style="margin:0 0 10px 0;">{{l.lesson.course.content}}</p>
+  {%if l.memo%}{%if l.memo != 'None' %}<p><font class="greyBackground">课堂观察</font>&nbsp;{{l.memo}}{%endif%}{%endif%}
+  <p><font class="greyBackground">主题</font>&nbsp;{%for s in l.theme%}{{s|get_name:"theme"}}&nbsp;{%endfor%}</p>
+  <p><font class="greyBackground">技术</font>&nbsp;{%for s in l.skill%}{{s|get_name:"skill"}}&nbsp;{%endfor%}</p>
+  <p><font class="greyBackground">能力</font>&nbsp;{%for s in l.ability%}{{s|get_name:"ability"}}&nbsp;{%endfor%}</p>
+
+
+  {%endfor%}
+
+  {%else%}
+  <div style="width:100%;text-align:center;padding:20px;font-size:16px;">
+  请输入学生小名或英文名
+  <p><input id="name" name="name" /></p>
+  <p><button onclick="go()">查询学习记录</button></p>
+  </div>
+
+  {%endif%}
+  <div style="height:20px;"></div>
+  <hr>
+  <div style="width:100%;text-align:center;font-size:16px;"><a href="https://mp.weixin.qq.com/s/TJi0vnCjJth4mpxBgorraQ">如何加入Patch老师的Scratch编程小课程？</a>
+  </div>
+  <div style="padding:0px;width:100%;text-align:center"><img src="/static/img/mylogo2.png" style="width:50%" /></div>
+{% endblock %}
+
+{% block scripts %}
+
+<script>
+  $(document).ready(function() {
+
+      $("title").html("{{user.name}}的Scratch课堂成长记录")
+  })
+  function goWork(uid,lid){
+    var para = "?userId="+uid+"&lessonId="+lid;
+    document.location.href="{% url 'User:work' %}"+para;
+  }
+  function go(){
+
+    document.location.href="{% url 'User:profile' %}?name="+$("#name").val()
+  }
+</script>
+
+{% endblock %}

@@ -1,0 +1,134 @@
+upstream django {
+    server unix:///data/go2/go2.sock; # for a file socket
+    #server 127.0.0.1:8080; # for a web port socket (we'll use this first)
+}
+
+# Default server configuration
+#
+server {
+	listen 80 default_server;
+	listen [::]:80 default_server;
+
+	root /var/www/html;
+
+	# Add index.php to the list if you are using PHP
+	index index.html index.htm index.nginx-debian.html;
+
+	server_name _;
+
+  return 301 https://rang.jieli360.com$request_uri;
+
+	#location / {
+		# First attempt to serve request as file, then
+		# as directory, then fall back to displaying a 404.
+	#	try_files $uri $uri/ =404;
+	#}
+  location / {
+      uwsgi_pass  django;
+      include     /data/go2/uwsgi_params; # the uwsgi_params file you installed
+  }
+
+  charset     utf-8;
+
+  # max upload size
+  client_max_body_size 75M;   # adjust to taste
+
+  # Django media
+  location /go_media  {
+      alias /data/go2/go_media;  # your Django project's media files - amend as required
+  }
+
+  location /go_static {
+      alias /data/go2/go_static; # your Django project's static files - amend as required
+  }
+  location ^~ /.well-known/acme-challenge/ {
+    default_type "text/plain";
+    root         /var/www/html;
+  }
+
+  location /scratch {
+        alias /var/www/html/scratch; #
+        client_max_body_size 10M;
+  }
+
+	# pass PHP scripts to FastCGI server
+	#
+	#location ~ \.php$ {
+	#	include snippets/fastcgi-php.conf;
+	#
+	#	# With php-fpm (or other unix sockets):
+	#	fastcgi_pass unix:/var/run/php/php7.0-fpm.sock;
+	#	# With php-cgi (or other tcp sockets):
+	#	fastcgi_pass 127.0.0.1:9000;
+	#}
+
+	# deny access to .htaccess files, if Apache's document root
+	# concurs with nginx's one
+	#
+	#location ~ /\.ht {
+	#	deny all;
+	#}
+}
+
+
+# Virtual Host configuration for example.com
+#
+# You can move that to a different file under sites-available/ and symlink that
+# to sites-enabled/ to enable it.
+#
+#server {
+#	listen 80;
+#	listen [::]:80;
+#
+#	server_name example.com;
+#
+#	root /var/www/example.com;
+#	index index.html;
+#
+#	location / {
+#		try_files $uri $uri/ =404;
+#	}
+#}
+
+
+server{
+
+  listen 443 ssl;
+  server_name         rang.jieli360.com;
+
+  ssl_certificate     /etc/letsencrypt/live/rang.jieli360.com/fullchain.pem;
+  ssl_certificate_key /etc/letsencrypt/live/rang.jieli360.com/privkey.pem;
+
+  #server_name         www.go2crm.cn;
+  #ssl_certificate     /etc/letsencrypt/live/www.go2crm.cn/fullchain.pem;
+  #ssl_certificate_key /etc/letsencrypt/live/www.go2crm.cn/privkey.pem;
+
+  ssl_protocols       TLSv1 TLSv1.1 TLSv1.2;
+  ssl_ciphers         HIGH:!aNULL:!MD5;
+  client_max_body_size 10M;
+
+  location / {
+        uwsgi_pass  django;
+        include     /data/go2/uwsgi_params; # the uwsgi_params file you installed
+        client_max_body_size 10M;
+  }
+  location /go_static {
+        alias /data/go2/go_static; # your Django project's static files
+        client_max_body_size 10M;
+  }
+  location /go_media {
+        alias /data/go2/go_media; # your Django project's static files
+        client_max_body_size 10M;
+  }
+
+  location ^~ /.well-known/acme-challenge/ {
+   default_type "text/plain";
+   root         /var/www/html;
+  }
+
+  location /scratch {
+        alias /var/www/html/scratch; #
+        client_max_body_size 10M;
+  }
+
+}

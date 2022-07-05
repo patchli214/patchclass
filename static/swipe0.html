@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<!-- This is based on DillingerLee's great template here:
+https://github.com/Team-Code/KA_Offline -->
+<html>
+ <head>
+    <title>Processing.JS inside Webpages: Template</title>
+</head>
+<body>
+
+  <div style="position:relative;width:100%;padding-top:190px;" align="center">
+    <!--div style="width:100%;position:absolute;z-index: 1;padding:20px;"><img src="https://s.go2crm.cn/static/images/me.jpg" /></div-->
+    <div align="center" style="z-index: 2;position:absolute;width:100%;">
+	<!--This draws the Canvas on the webpage -->
+      <main></main>
+    </div>
+  </div>
+  <span id='x'></span><span>|</span><span id='y'></span>
+</body>
+
+ <!-- Run all the JavaScript stuff -->
+ <!-- Include the processing.js library -->
+ <!-- See https://khanacademy.zendesk.com/hc/en-us/articles/202260404-What-parts-of-ProcessingJS-does-Khan-Academy-support- for differences -->
+ <!--script src="https://cdn.jsdelivr.net/processing.js/1.4.8/processing.min.js"></script-->
+ <script src="https://s.go2crm.cn/static/js/p5.min.js"></script>
+
+ <script>
+ let x = 24,y=13;
+ let red = 25,green = 153, blue=123;
+ let img;
+ let i = 0;
+function preload() {
+  img = loadImage('/static/images/unicorn.png');
+  //img = loadImage('/static/images/me.jpg');
+}
+ function setup(){
+     createCanvas(500,500);
+ }
+ function draw(){
+
+     background(img,100);
+     fill(0,0,0,0);
+     stroke(0);
+     rect(20,13,464,443);
+     fill(red, green, blue);
+     noStroke();
+     circle(x,y,24);
+     if(x>484&&y<460){
+       y = y + 3;
+       red = red - 0.3;
+       green = green - 0.3;
+       blue = blue - 0.3;
+     }
+     if(x<484&&y<14){
+        if(x<26){
+            red = 25;
+            green = 153;
+            blue=123;
+        }
+        x = x + 3;
+        red = red + 0.5;
+        green = green + 0.5;
+        blue = blue + 0.5;
+     }
+
+     if(x>0&&y>456){
+        x = x -3;
+        red = red + 0.3;
+        green = green + 0.3;
+        blue = blue + 0.3;
+    }
+     if(x<24&&y>14){
+        y = y - 3;
+        red = red - 0.5;
+        green = green - 0.5;
+        blue = blue - 0.5;
+    }
+ }
+
+
+
+ </script>
+
+</html>
