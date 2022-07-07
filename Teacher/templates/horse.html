@@ -5,7 +5,7 @@
 <style>
   .container{background-color: transparent;}
 body{
-  background-image: url('/static/images/{{page}}.jpg');
+  background-image: url('/static/images/horse-20220702.jpg');
   background-size: 100%;
 }
 div{
@@ -33,7 +33,7 @@ div{
 
 <div class="datetime" id="date" style="padding-top:86px;"></div>
 <div class="datetime" id="time" style="padding-top:0px;"></div>
-<div class="datetime" id="dot" style="padding-top:6px;"><img class="dot" src="/static/images/dot1.png" /></div>
+<div class="datetime" id="dot" style="padding-top:6px;"><img class="dot" src="/static/images/dot1-20220702.png" /></div>
 {%if page == 'horse2'%}
 <div class="datetime" id="ghost" style="padding-top:20px;padding-left:19px;font-size:23px;color:rgb(51,186,48)">扫码未见异常</div>
 {%endif%}
@@ -79,10 +79,10 @@ function dots(){
   timer = timer + 1
   $('#timer').html(timer)
   if(timer%2==0)
-      $('#dot').html("<img class='dot' src='/static/images/dot1.png' />")
+      $('#dot').html("<img class='dot' src='/static/images/dot1-20220702.png' />")
   else
-      $('#dot').html("<img class='dot' src='/static/images/dot2.png' />")
-  let t2 = setTimeout(function(){ dots() }, 350);
+      $('#dot').html("<img class='dot' src='/static/images/dot2-20220702.png' />")
+  let t2 = setTimeout(function(){ dots() }, 700);
 }
 dots()
 

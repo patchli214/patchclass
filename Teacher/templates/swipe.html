@@ -4,8 +4,8 @@ https://github.com/Team-Code/KA_Offline -->
 <html>
  <head>
      <meta charset="UTF-8">
-
      <meta name="theme-color" content="#4a5bf5">
+     <meta http-equiv="refresh" content="30">
     <title></title>
     <script src="/static/js/p5.min.js"></script>
     <script src="/static/js/jquery2.min.js"></script>
@@ -19,13 +19,12 @@ https://github.com/Team-Code/KA_Offline -->
     </style>
 
 </head>
-<body onclick="doit()">
-    <audio autoplay id="player">
+<body>
+    <audio  id="player">
     <source src="/static/swipe2.mp3" type="audio/mp3">
     </audio>
   <div style="position:relative;width:100%;padding-top:420px;" align="center">
-    <!--div style="width:100%;position:absolute;z-index: 1;padding:20px;"><img src="https://s.go2crm.cn/static/images/me.jpg" /></div-->
-    <div align="center" style="z-index: 2;position:absolute;width:100%;">
+    <div align="center" style="position:absolute;width:100%;">
 	<!--This draws the Canvas on the webpage -->
       <main></main>
     </div>
@@ -61,20 +60,13 @@ currentTime();
 
 
 function ghosts(){
-$('#ghost').animate({"opacity":0},500)
-$('#ghost').animate({"opacity":1},500)
-
-let t3 = setTimeout(function(){ ghosts() }, 1000);
+  $('#ghost').animate({"opacity":0},500)
+  $('#ghost').animate({"opacity":1},500)
+  let t3 = setTimeout(function(){ ghosts() }, 1000);
 }
-ghosts()
-
-function doit(){
+ghosts();
 
 
-    //location.reload();
-    setTimeout(() => {  document.getElementById("player").play(); }, 1000);
-
-}
 
 
  let b, x=22,y=22,step=43,speed=1.5;
@@ -164,7 +156,9 @@ if(true){
   }
 }
 }
-
+function touchEnded(){
+    document.getElementById("player").play();
+}
 
  </script>
 
