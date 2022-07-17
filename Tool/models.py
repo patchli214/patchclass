@@ -62,6 +62,7 @@ class User(Document):
     gradeOneYear = IntField() #入学年份
     isReferrer = IntField() #是否介绍人
     referrer = StringField() #介绍人ID
+    referrerName = StringField() #介绍人
     meta = {
         'collection': 'User'
     }

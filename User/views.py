@@ -47,9 +47,19 @@ def userList(request):
         try:
             days = (dateNow-u.birthday).days
             u.year = str(days/365)
-
         except:
             err = 1
+        u.referrerName = ''
+        if u.referrer:
+            try:
+                rr = User.objects.get(id=u.referrer)
+                u.referrerName = rr.name
+            except Exception, e:
+                print(e)
+                u.referrerName = ''
+        if u.referrer:
+            print('[u.referrer-----------]')
+            print(u.referrerName)
         temp.append(u)
     users = temp
     return render(request, 'userList.html', {"login_teacher":login_teacher,"users":users,
