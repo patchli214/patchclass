@@ -5,7 +5,7 @@
 <style>
   .container{background-color: transparent;}
 body{
-  background-image: url('/static/images/horse-20220702.jpg');
+  background-image: url('/static/images/horse-20220714.jpg');
   background-size: 100%;
 }
 div{
@@ -21,23 +21,10 @@ div{
 }
 </style>
 
-{%if page == 'horse2'%}
-
-
-<audio autoplay id="player">
-<source src="/static/ding.mp3" type="audio/mp3">
-</audio>
-  <!--source src="/static/ding.mp3" type="audio/mpeg"-->
-
-{%endif%}
-
 <div class="datetime" id="date" style="padding-top:86px;"></div>
 <div class="datetime" id="time" style="padding-top:0px;"></div>
-<div class="datetime" id="dot" style="padding-top:6px;"><img class="dot" src="/static/images/dot1-20220702.png" /></div>
-{%if page == 'horse2'%}
-<div class="datetime" id="ghost" style="padding-top:20px;padding-left:19px;font-size:23px;color:rgb(51,186,48)">扫码未见异常</div>
-{%endif%}
-<div class="datetime" style="width:92%;padding-top:{%if page == 'horse2'%}175{%else%}228{%endif%}px;text-align:end;">11**************1X</div>
+<div class="datetime" id="dot" style="padding-top:6px;"><img class="dot" src="" /></div>
+<div class="datetime" style="width:92%;padding-top:228px;text-align:end;">11**************1X</div>
 <div class="datetime" id="checktime" style="width:92%;padding-top:8px;text-align:end;"></div>
 <div class="datetime" id="oktime" style="width:92%;padding-top:8px;text-align:end;padding-bottom:110px;color:rgb(219,57,62);"></div>
 
@@ -62,13 +49,6 @@ function currentTime(){
 
   $('#time').html(hour+":"+min+":"+sec)
   $('#checktime').html(month+"-"+day+' '+"04:47")
-  {%if page == 'horse2'%}
-  var h2 = now.getHours()
-  var m2 = now.getMinutes()
-  if(h2<10)h2='0'+h2
-  if(m2<10)m2='0'+m2
-  $('#checktime').html(month+"-"+day+' '+h2+":"+m2)
-  {%endif%}
   $('#oktime').html(month+"-"+day+' '+"24:00")
 
   let t = setTimeout(function(){ currentTime() }, 1000);
@@ -79,31 +59,16 @@ function dots(){
   timer = timer + 1
   $('#timer').html(timer)
   if(timer%2==0)
-      $('#dot').html("<img class='dot' src='/static/images/dot1-20220702.png' />")
+
+      $('#dot').html("<img class='dot' src='/static/images/dot1{%if page == 'horse2'%}-green{%endif%}.png' />")
   else
-      $('#dot').html("<img class='dot' src='/static/images/dot2-20220702.png' />")
+      $('#dot').html("<img class='dot' src='/static/images/dot2{%if page == 'horse2'%}-green{%endif%}.png' />")
   let t2 = setTimeout(function(){ dots() }, 700);
 }
 dots()
 
 
-{%if page == 'horse2'%}
 
-function ghosts(){
-$('#ghost').animate({"opacity":0},500)
-$('#ghost').animate({"opacity":1},500)
-
-let t3 = setTimeout(function(){ ghosts() }, 1000);
-}
-ghosts()
-
-$("body").click(function(){
-document.getElementById("player").play()
-})
-
-
-
-{%endif%}
 
 </script>
 {% endblock %}
