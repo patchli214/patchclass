@@ -10,7 +10,14 @@
 
 <div class="input">name&nbsp;<input id="name" value="{{user.name}}" /></div>
 <div class="input">name2&nbsp;<input id="name2" value="{{user.name2|default:''}}" /></div>
-<div class="input">location&nbsp;<input id="location" value="{{user.location|default:''}}" /></div>
+<div class="input">
+    location&nbsp;<input id="location" value="{{user.location|default:''}}" />
+    referrer&nbsp;<select id="referrer"><option value="0" selected>请选择</option>
+        {%for ref in refs%}
+      <option value="{{ref.id}}" {%if user.referrer == ref.id|stringformat:"s"%}selected{%endif%} >{{ref.name}}</option>
+        {%endfor%}
+    </select>
+</div>
 <div class="input">timezone&nbsp;<input id="timezone" value="{{user.timezone|default:''}}" /></div>
 <div class="input">gender&nbsp;&nbsp;&nbsp;&nbsp;<input type="radio" name="gender" value="男" {%if user.gender == '男'%}checked{%endif%}/>男 &nbsp;&nbsp;<input type="radio" name="gender" value="女" {%if user.gender == '女'%}checked{%endif%}/>女</div>
 <div class="input">
@@ -64,7 +71,8 @@
                 "c1email": $("#c1email").val(),
                 "status": $("#status").val(),
                 "grade": $("#grade").val(),
-                "isReferrer":$("#isReferrer").is(':checked')
+                "isReferrer":$("#isReferrer").is(':checked'),
+                "referrer":$("#referrer").val()
             }, function (res) {
                 alert(res["msg"]);
                 if(res["error"]==0){

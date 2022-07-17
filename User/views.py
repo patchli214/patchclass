@@ -132,6 +132,12 @@ def api_userEdit(request):
     except:
         user = User()
 
+    referrer = request.POST.get("referrer")
+    try:
+        ref = User.objects.get(id=referrer)  # @UndefinedVariable
+    except:
+        ref = None
+
     if gradeOneYear:
         user.gradeOneYear = gradeOneYear
 
@@ -147,6 +153,10 @@ def api_userEdit(request):
     user.c1wechat = c1wechat
     user.status = status
     user.isReferrer = isReferrer
+    if ref:
+        user.referrer = str(ref.id)
+    else:
+        user.referrer = None
 
     user.save()
 
