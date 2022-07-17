@@ -13,6 +13,7 @@ urlpatterns = [
     url(r'^userEdit$', userEdit,name="userEdit"),
     url(r'^api_userEdit$', api_userEdit,name="api_userEdit"),
     url(r'^userSkill$', userSkill,name="userSkill"),
-    
+    url(r'^index$', index,name="index"),
+
 ]
 app_name = 'User'

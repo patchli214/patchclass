@@ -14,6 +14,10 @@ from Tool.models import Teacher, Classroom, User,Lesson, Course, UserLesson
 from mongoengine.queryset.visitor import Q
 from django.utils.dateparse import parse_datetime
 
+def index(request):
+    return render(request, 'index.html', {})
+
+
 def userList(request):
     login_teacher = util.checkCookie(request)
     if not (login_teacher):
@@ -65,16 +69,22 @@ def userEdit(request):
 
     except:
         user = None
-
-    return render(request, 'userEdit.html', {"login_teacher":login_teacher,
-                                             "grades":constant.GRADE,
-                                             "user":user})
+    refs = None
+    try:
+        query = Q(isReferrer=1)&Q(id__ne=userId)
+        refs = User.objects.filter(query)
+    except:
+        refs = None
+    #return render(request, 'userEdit.html')
+    return render(request, 'userEdit.html', {"login_teacher":login_teacher,"grades":constant.GRADE,"refs":refs,"user":user})
 
 @csrf_exempt
 def api_userEdit(request):
     login_teacher = util.checkCookie(request)
     if not (login_teacher):
         return HttpResponseRedirect('/login')
+
+
     userId = request.POST.get("userId")
     name = request.POST.get("name")
     name2 = request.POST.get("name2")
@@ -97,13 +107,24 @@ def api_userEdit(request):
     c1wechat = request.POST.get("c1wechat")
     statusStr  =  request.POST.get("status")
     gradeOneYear = getGradeOneYear(grade)
-
+    referrer = None
     try:
         status = int(statusStr)
 
     except Exception as e:
         print(e)
         status = 0
+
+    isReferrerStr = request.POST.get("isReferrer")
+    try:
+        if isReferrerStr == "true":
+            isReferrer = 1
+        else:
+            isReferrer = 0
+
+    except Exception as e:
+        print(e)
+        isReferrer = 0
 
     user = None
     try:
@@ -125,6 +146,7 @@ def api_userEdit(request):
     user.c1email = c1email
     user.c1wechat = c1wechat
     user.status = status
+    user.isReferrer = isReferrer
 
     user.save()
 
@@ -198,7 +220,7 @@ def work(request):
     try:
         userLesson = UserLesson.objects.get(query)  # @UndefinedVariable
         userLesson = getMediaType(userLesson)
-        
+
         #=======================================================================
         # userLesson.mediaType = ''
         # if userLesson.media:

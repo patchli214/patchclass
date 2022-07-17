@@ -6,6 +6,7 @@
   .input{font-size:18px;padding:5px;}
 </style>
 <div style="height:10px;"></div>
+<div class="input"><input id="isReferrer" type="checkbox" {% if user.isReferrer == 1%}checked{%endif%}>isReferrer</div>
 
 <div class="input">name&nbsp;<input id="name" value="{{user.name}}" /></div>
 <div class="input">name2&nbsp;<input id="name2" value="{{user.name2|default:''}}" /></div>
@@ -62,7 +63,8 @@
                 "c1wechat": $("#c1wechat").val(),
                 "c1email": $("#c1email").val(),
                 "status": $("#status").val(),
-                "grade": $("#grade").val()
+                "grade": $("#grade").val(),
+                "isReferrer":$("#isReferrer").is(':checked')
             }, function (res) {
                 alert(res["msg"]);
                 if(res["error"]==0){

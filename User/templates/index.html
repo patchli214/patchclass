@@ -1,16 +1,58 @@
-<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
-<html>
-<head>
-  <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-  <meta http-equiv="Content-Style-Type" content="text/css">
-  <title></title>
-  <meta name="Generator" content="Cocoa HTML Writer">
-  <meta name="CocoaVersion" content="1894.6">
-  <style type="text/css">
-    p.p1 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica}
-  </style>
-</head>
-<body>
-<p class="p1">Hello, world!</p>
-</body>
-</html>
+{% extends "base.html" %}
+{%load filter%}
+{% block content %}
+<link rel="stylesheet" href="//code.jquery.com/ui/1.13.1/themes/base/jquery-ui.css">
+<style>
+    a{color:rgb(218,59,95)}
+    </style>
+<div style="float:left;color:orange;font-size:36px;font-weight:900;">Scratch</div>
+<div style="float:right;color:black;font-size:36px;font-weight:300;">...micro:bit</div>
+<div style="padding-top:14px;clear:both;font-size:30px;font-weight:100;">示例Samples</div>
+<div style="padding-top:20px;font-size:26px;font-weight:100;">
+    <a class="example" id="28741">翻页时钟</a>
+    <a class="example" id="24356">Joy Stick</a>
+    <a class="example" id="28892">齿轮</a>
+</div>
+<div id="dialog" title="加载中，请稍等" style="padding:0; margin:0;">
+  <!--iframe id="pop" src="" allowtransparency="true" width="356" height="332" frameborder="0" scrolling="no" allowfullscreen></iframe-->
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script src="https://code.jquery.com/jquery-3.6.0.js"></script>
+  <script src="https://code.jquery.com/ui/1.13.1/jquery-ui.js"></script>
+  <script>
+  $( function() {
+    $( "#dialog" ).dialog({autoOpen: false});
+    $( ".example" ).click(function(){
+      $( "#dialog" ).dialog("open");
+      $( "#dialog" ).dialog("option","minWidth",360);
+      $("#ui-id-1").html("加载中，请稍等");
+      var sid = $(this).attr("id");
+      var iframe = document.createElement('iframe');
+      const attFB = document.createAttribute("frameborder");
+      const attWI = document.createAttribute("width");
+      const attHI = document.createAttribute("height");
+      attFB.value = "0";
+      attWI.value = "356";
+      attHI.value = "332";
+      iframe.setAttributeNode(attFB);
+      iframe.setAttributeNode(attWI);
+      iframe.setAttributeNode(attHI);
+      var exam = $(this);
+      iframe.onload = function() {
+          $("#ui-id-1").html(exam.html());
+          //alert("loaded");
+      }; // before setting 'src'
+      iframe.src = "https://create.codelab.club/projects/"+sid+"/embed";
+
+      var element = document.getElementById("dialog");
+      element.replaceChild(iframe, element.childNodes[0]);
+
+    });
+  } );
+
+
+
+  </script>
+{% endblock %}
