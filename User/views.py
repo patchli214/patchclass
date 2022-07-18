@@ -23,19 +23,33 @@ def userList(request):
     if not (login_teacher):
         return HttpResponseRedirect('/login')
     inClass = request.GET.get("inClass")
+    paid = request.GET.get("paid")
+    learned = request.GET.get("learned")
+
     status = request.GET.get("status")
     query = Q(status__gt=-1)
-    title = u'全部学生'
+    title = u'全部'
 
-    other = {'?inClass=1':u'在班学生'}
+    other = {'?inClass=1':u'在班学生','?learned=1':u'学过','?paid=1':u'付费'}
 
     if inClass == '1':
         title = u'在班学生'
-        other = {'?':u'全部学生'}
-
+        other = {'?':u'全部','?learned=1':u'学过','?paid=1':u'付费'}
         query = query&Q(inClass=1)
+    if learned == '1':
+        title = u'学过'
+        other = {'?':u'全部','?inClass=1':u'在班学生','?paid=1':u'付费'}
+        query = query&Q(lessons__gt=0)
+
+    if paid == '1':
+        title = u'付费'
+        other = {'?':u'全部','?inClass=1':u'在班学生','?learned=1':u'学过'}
+        query = query&Q(status=1)
+
     if inClass == '0':
         query = query&Q(inClass__ne=1)
+
+
     users = User.objects.filter(query)  # @UndefinedVariable
 
     temp = []
@@ -118,8 +132,11 @@ def api_userEdit(request):
     statusStr  =  request.POST.get("status")
     gradeOneYear = getGradeOneYear(grade)
     referrer = None
+    print('[--------status-----------------]')
+    print(statusStr)
     try:
         status = int(statusStr)
+        print(status)
 
     except Exception as e:
         print(e)
