@@ -71,14 +71,15 @@ class User(Document):
 class Contract(Document):
     #customer = ReferenceField(Customer)
     user = ReferenceField(User)
-    signDate = DateTimeField()   #缴费（预定）日期
+    payTime = DateTimeField()   #缴费日期
     beginDate = DateTimeField()  #开课日期
     lesson = IntField() #共几次课
     validDate = DateTimeField() #有效期截止日
-    paid = IntField() #实际交费
-    payment = StringField() #付款凭证
+    income = IntField() #实际交费
+    payWay = StringField() #付款凭证
     memo = StringField()
     refund = IntField() #转介退款
+    refundTime = DateTimeField() #refund日
     meta = {
         'collection': 'Contract'
     }

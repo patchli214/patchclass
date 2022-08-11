@@ -11,10 +11,10 @@ from tzlocal import get_localzone
 from Tool.models import Teacher
 from django.http import HttpResponse
 import hashlib
-import pytz 
+import pytz
 from Tool.models import Classroom,User
 import random
-  
+
 
 class JSONResponse(HttpResponse):
     def __init__(self, obj):
@@ -58,16 +58,16 @@ def getDateNow(TZName=None):
             now = int(time.time())
             timeNow = datetime.datetime.utcfromtimestamp(now)
         else:
-            # get the standard UTC time  
-            UTC = pytz.utc 
-# it will get the time zone  
-# of the specified location 
-            IST = pytz.timezone(TZName) 
+            # get the standard UTC time
+            UTC = pytz.utc
+# it will get the time zone
+# of the specified location
+            IST = pytz.timezone(TZName)
             timeNow = datetime.datetime.now(IST)
-# print the date and time in 
-# standard format 
+# print the date and time in
+# standard format
 
-    
+
     return timeNow
 
 def getWeekFirstDay(firstDay):
@@ -78,17 +78,17 @@ def getWeekFirstDay(firstDay):
         #firstDay = weekday + 1
         firstDay = now - datetime.timedelta(days=weekday)
         firstDay = datetime.datetime.strptime(firstDay.strftime("%Y-%m-%d")+" 00:00:00","%Y-%m-%d %H:%M:%S")
-        
-        
+
+
     firstDay = firstDay.replace(hour=0)
     firstDay = firstDay.replace(minute=0)
     firstDay = firstDay.replace(second=0)
     firstDay = firstDay.replace(microsecond=0)
- 
+
     lastDay = firstDay + datetime.timedelta(days=6)
     lastWeekFirstDay = firstDay + datetime.timedelta(days=-7)
     nextWeekFirstDay = firstDay + datetime.timedelta(days=7)
-    
+
     return firstDay,lastDay,lastWeekFirstDay,nextWeekFirstDay
 
 def getTimeZone(city):
@@ -101,14 +101,14 @@ def getTimeZone(city):
 
 
 
- 
+
 # use your local timezone name here
 # NOTE: pytz.reference.LocalTimezone() would produce wrong result here
 
 ## You could use `tzlocal` module to get local timezone on Unix and Win32
 # from tzlocal import get_localzone # $ pip install tzlocal
 
-# # get local timezone    
+# # get local timezone
 # local_tz = get_localzone()
 
 def  local_to_utc(localTimeStr,localTimezone):
@@ -119,16 +119,16 @@ def  local_to_utc(localTimeStr,localTimezone):
     return utc_dt
 
 def utc_to_local(utc_dt,timezone):
-    
+
     if not timezone:
         timezone = 'Asia/Shanghai'
 
     local_tz = pytz.timezone(timezone)
     local_dt = utc_dt.replace(tzinfo=pytz.utc).astimezone(local_tz)
-    return local_tz.normalize(local_dt) # .normalize might be unnecessary        
+    return local_tz.normalize(local_dt) # .normalize might be unnecessary
 
 def userCoursePlan(weeks = None):
-        
+
     classrooms = Classroom.objects.filter(users__ne=None).order_by("lessonWeekday","lessonTime")  # @UndefinedVariable
     userCourse = {} #userId:courseNo pairs
     courses = {}
@@ -136,10 +136,10 @@ def userCoursePlan(weeks = None):
     if not weeks:
         weeks = 1
     temp0 = []
-    
-    for week in range(weeks+1):  
-        
-        if week > 0:       
+
+    for week in range(weeks+1):
+
+        if week > 0:
             for c in classrooms:
                 c2=Classroom()
                 c2.code = str(week) + '-' + str(c.lessonWeekday)+'-'+c.lessonTime
@@ -153,16 +153,16 @@ def userCoursePlan(weeks = None):
                     u2.c2email = str(week)+'-'+str(u.id)
                     u2.c1email = str(u.id)
                     users.append(u2)
-                c2.users = users                                
+                c2.users = users
                 temp0.append(c2)
 
     for c in temp0:
         j = j + 1 #周期内上课顺序号
         temp = [] # all identical courseNos
         cn = 0
-        
+
         for u in c.users:
-            try: 
+            try:
                 courseNos = userCourse[str(u.c1email)]
                 list = courseNos.split('-')
                 for l in list:
@@ -198,21 +198,28 @@ def userCoursePlan(weeks = None):
                 userCourse[str(u.c1email)] = str(cn) #set this course‘s courseNo as cn
             else:
                 userCourse[str(u.c1email)] = pre + '-' + str(cn) #set this course‘s courseNo as cn
-        #print c.code     
+        #print c.code
         courses[c.code] = cn #当前时间的课程标号设为cn
     #print userCourse
     return courses
+
+def removeComment():
+    file = open("/Users/patch/Documents/project/patchclass/station.json",'r')
+    file2 = open("/Users/patch/Documents/project/patchclass/station2.json",'a')
+    lines = file.readlines()
+    for line in lines:
+        if line.find('/*') == -1:
+            file2.writelines([line])
+    print('DONE')
+    return
 
 if __name__ == "__main__":
     #print str2md5('jieli360')
     #getDateNow('Asia/Shanghai')
     #getDateNow()
     #getDateNow('UTC')
-    getDateNow('America/Phoenix')
-    getDateNow('Europe/Berlin')
+    #getDateNow('America/Phoenix')
+    #getDateNow('Europe/Berlin')
     #getDateNow('Asia/Hong_Kong')
     #getTimeZone('Beijing')
-    
-    
-    
-    
+    removeComment()

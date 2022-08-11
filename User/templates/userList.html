@@ -22,7 +22,7 @@
 <table  id="datatable" class="table table-striped table-bordered">
   <thead>
   <tr>
-    <th>序号</th><th>名字</th><th>性别</th><th>城市</th><th>年级</th><th>referrer</th><th>听课数</th><th>在班</th>
+    <th>序号</th><th>名字</th><th>性别</th><th>城市</th><th>年级</th><th>referrer</th><th>听课数</th><th>在班</th><th>付费</th>
   </tr>
   </thead>
   <tbody>
@@ -39,6 +39,7 @@
     <td>{{user.referrerName|default:""}}</td>
     <td><a target="_blank" href="{% url 'User:profile' %}?userId={{user.id}}">{{user.lessons|default:''}}</a></td>
     <td>{%if user.inClass == 1%}是{%endif%}</td>
+    <td><button class="payButton" id="{{user.id}}">{{user.name}}</button>
   </tr>
   {%endfor%}
   </tbody>
@@ -100,5 +101,11 @@ function goUser(userId){
   var para = "?userId="+userId
   document.location.href="{% url 'User:userEdit' %}"+para
 }
+$(".payButton").click(function(){
+    console.log('-----------click-----------')
+    var para = "?userId="+$(this).attr("id")
+    document.location.href="{% url 'User:pay' %}"+para
+});
+
 </script>
 {% endblock %}

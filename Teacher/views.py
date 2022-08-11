@@ -39,7 +39,7 @@ class UserLoginForm(forms.Form):
 
 @csrf_exempt
 def login(request):
-
+    isTeacher = False
     if request.method == "POST":
         uf = UserLoginForm(request.POST)
 
@@ -55,7 +55,7 @@ def login(request):
                 res = {"error": 1, "msg": "非法字符"}
             username = username.lower()
 
-            user = Teacher()
+            user = None
 
             users = []
             users = Teacher.objects.filter(login__exact=username).filter(pw__exact=password_md5)  # @UndefinedVariable
@@ -63,12 +63,20 @@ def login(request):
                 user = users.first()
                 if user.status == -1:
                     res = {"error": 1, "msg": "已离职"}
+                else:
+                    isTeacher = True
             except:
-                res = {"error": 1, "msg": "用户名密码错误"}
+                users = User.objects.filter(login__exact=username).filter(pw__exact=password_md5)  # @UndefinedVariable
+                try:
+                    user = users.first()
+                    if user.status == -1:
+                        res = {"error": 1, "msg": "已注销"}
+                except:
+                    res = {"error": 1, "msg": "用户名密码错误"}
 
 
             res_login = res
-            if res_login["error"] == 0:
+            if res_login["error"] == 0 and isTeacher:
 
                 response = HttpResponseRedirect('/Teacher/lessonPlan')
 
@@ -80,8 +88,19 @@ def login(request):
                 response.set_cookie('tel',user.tel)
 
                 return response
+            elif res_login["error"] == 0:
+                response = HttpResponseRedirect('/User/userList')
+                response.set_cookie('login',user.login)
+                response.set_cookie('userid', user.id)
+                response.set_cookie('name', user.name)
+                response.set_cookie('name2', user.name2)
+                response.set_cookie('wechat',user.wechat)
+                response.set_cookie('tel',user.tel)
+                return response
             else:
-                return render('login.html', {'msg': res_login["msg"], 'uf': uf})
+                response = HttpResponseRedirect('/login?wrongLogin=1')
+                return response
+                #return render('login.html', {'msg': res_login["msg"], 'uf': uf})
     else:
         uf = UserLoginForm()
     return render(request, 'login.html', {'uf': uf,'addr':request.META['HTTP_HOST']})

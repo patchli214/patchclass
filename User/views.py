@@ -79,6 +79,121 @@ def userList(request):
     return render(request, 'userList.html', {"login_teacher":login_teacher,"users":users,
                                              "title":title,"other":other})
 
+def pay(request):
+    login_teacher = util.checkCookie(request)
+    if not (login_teacher):
+        return HttpResponseRedirect('/login')
+    userId = request.GET.get("userId")
+    user = None
+    try:
+        user = User.objects.get(id=userId)  # @UndefinedVariable
+        grade = getGrade(user.gradeOneYear)
+        if grade:
+            user.grade = str(grade)
+
+    except:
+        user = None
+    refs = None
+    try:
+        query = Q(isReferrer=1)&Q(id__ne=userId)
+        refs = User.objects.filter(query)
+    except:
+        refs = None
+    #return render(request, 'userEdit.html')
+    return render(request, 'pay.html', {"login_teacher":login_teacher,"grades":constant.GRADE,"refs":refs,"user":user})
+
+@csrf_exempt
+def api_pay(request):
+    login_teacher = util.checkCookie(request)
+    if not (login_teacher):
+        return HttpResponseRedirect('/login')
+
+    payId = request.POST.get("payId")
+    userId = request.POST.get("userId")
+    payWay = request.POST.get("payWay")
+    payTime = request.POST.get("payTime")
+    income = request.POST.get("income")
+    refundTime = request.POST.get("refundTime")
+    lesson = request.POST.get("lesson")
+    refund = request.POST.get("refund")
+    memo = request.POST.get("memo")
+    if not payTime or payTime == '':
+        res = {"error": 1, "msg": "no pay time"}
+        return util.JSONResponse(json.dumps(res, ensure_ascii=False))
+    if not income or income == '':
+        res = {"error": 1, "msg": "no pay amount"}
+        return util.JSONResponse(json.dumps(res, ensure_ascii=False))
+
+    ptime = None
+    try:
+        ptime = util.local_to_utc(payTime,"Asia/Shanghai")
+    except:
+        res = {"error": 1, "msg": "no pay time"}
+        return util.JSONResponse(json.dumps(res, ensure_ascii=False))
+    inc = 0
+    try:
+        inc = int(income)
+    except:
+        res = {"error": 1, "msg": "pay amount number err"}
+        return util.JSONResponse(json.dumps(res, ensure_ascii=False))
+    lessonAmount = 0
+    try:
+        lessonAmount = int(lesson)
+    except:
+        res = {"error": 1, "msg": "lesson amount err"}
+        return util.JSONResponse(json.dumps(res, ensure_ascii=False))
+    referrer = None
+
+    user = None
+    try:
+        user = User.objects.get(id=userId)  # @UndefinedVariable
+    except:
+        res = {"error": 1, "msg": "user not found err"}
+        return util.JSONResponse(json.dumps(res, ensure_ascii=False))
+
+    referrer = request.POST.get("referrer")
+    try:
+        ref = User.objects.get(id=referrer)  # @UndefinedVariable
+    except:
+        ref = None
+
+    cont = None
+    if not payId or payId == '':
+        cont = Contract()
+    else:
+        try:
+            cont = Contract.objects.get(id=payId)
+        except:
+            res = {"error": 1, "msg": "Contract ID err"}
+            return util.JSONResponse(json.dumps(res, ensure_ascii=False))
+    cont.user = user
+    cont.payTime = ptime
+    cont.income = inc
+    cont.memo = memo
+    cont.payWay = payWay
+    if rtime:
+        cont.refundTime = rtime
+    if refund and refund != '':
+        refu = 0
+        try:
+            refu = int(refund)
+        except:
+            res = {"error": 1, "msg": "refund amount number err"}
+            return util.JSONResponse(json.dumps(res, ensure_ascii=False))
+        cont.refund = refu
+
+    user.status = status
+    user.isReferrer = isReferrer
+    if ref:
+        user.referrer = str(ref.id)
+    else:
+        user.referrer = None
+
+    user.save()
+
+    res = {"error": 0, "msg": "OK"}
+    return util.JSONResponse(json.dumps(res, ensure_ascii=False))
+
 def userEdit(request):
     login_teacher = util.checkCookie(request)
     if not (login_teacher):
@@ -132,8 +247,7 @@ def api_userEdit(request):
     statusStr  =  request.POST.get("status")
     gradeOneYear = getGradeOneYear(grade)
     referrer = None
-    print('[--------status-----------------]')
-    print(statusStr)
+
     try:
         status = int(statusStr)
         print(status)
@@ -245,9 +359,9 @@ def profile(request):
         c.lessonTime = datetime.datetime.strftime(dateLocal,"%H:%M")
         temp.append(c)
 
-
+    refs = User.objects.filter(referrer=user.id)
     return render(request, 'profile.html', {"lessons":ttt,"login_teacher":login_teacher,
-                                                  "classrooms":temp,"user":user})
+                                                  "classrooms":temp,"user":user,"refs":refs})
 
 def work(request):
     userId = request.GET.get("userId")

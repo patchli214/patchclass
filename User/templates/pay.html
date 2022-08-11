@@ -1,0 +1,94 @@
+{% extends "base.html" %}
+{%load filter%}
+{% block content %}
+<style>
+  .h3p{width:100%;margin:10px 0 0 0 ;background-color:#eee;}
+  .input{font-size:18px;padding:5px;}
+  .inputTag{background:#dddddd;}
+</style>
+<div style="height:10px;"></div>
+<div class="input">付费</div>
+
+<div class="input"><font class="inputTag">名字</font>&nbsp;{{user.name}}&nbsp;&nbsp;{{user.name2|default:''}}</div>
+
+<div class="input">
+
+    referrer&nbsp;<select id="referrer"><option value="0" selected>请选择</option>
+        {%for ref in refs%}
+      <option value="{{ref.id}}" {%if user.referrer == ref.id|stringformat:"s"%}selected{%endif%} >{{ref.name}}</option>
+        {%endfor%}
+    </select>
+</div>
+
+<div class="input">{{user.gender}}&nbsp;&nbsp;
+    {%for s in grades%}
+     {%if user.grade == s%}{{s|get_name:"grade"}}{%endif%}
+    {%endfor%}
+    &nbsp;{{user.location|default:''}}
+</div>
+
+<div class="input"><font class="inputTag">家长</font>&nbsp;{{user.customer1|default:''}}</div>
+<div class="input"><font class="inputTag">电话</font>&nbsp;{{user.c1tel|default:''}}</div>
+<div class="input"><font class="inputTag">微信</font>&nbsp;{{user.c1wechat|default:''}}</div>
+
+
+<div class="input">缴费时间&nbsp;<input id="payTime" />
+  方式<select id="payWay"><option value="wechat" {%if userPay.way == 'wechat'%}selected{%endif%}>微信</option>
+  <option value="alipay" {%if userPay.way == 1%}selected{%endif%}>支付宝</option>
+  <option value="bank" {%if userPay.way == 2%}selected{%endif%}>银行</option>
+  <option value="other" {%if userPay.way == 2%}selected{%endif%}>其他</option>
+</select>
+</div>
+<div class="input">金额&nbsp;<input id="income" />
+<div class="input">课次&nbsp;<input id="lesson" />
+<div class="input">截止时间&nbsp;<input id="validDate" />
+<div class="input">备注&nbsp;<input id="memo" />
+    <hr />
+<div class="input">退款时间&nbsp;<input id="refundTime" />
+<div class="input">退款金额&nbsp;<input id="refund" />
+
+<div  onclick="savepay()" style="padding:20px;text-align:center;"><button style="width:80%;height:40px;">Save</button>
+{% endblock %}
+
+{% block scripts %}
+    <script>
+
+        function savepay() {
+
+          var payTime = $("#payTime").val();
+          var income = $("#income").val();
+          if(payTime==''){
+                alert('缴费时间不能空！');
+                return;
+          }
+          if(name==''){
+                alert('金额不能空！');
+                return;
+          }
+
+            $.post("{% url 'User:api_pay' %}", {
+                "userId":'{{user.id}}',
+                "payTime": payTime,
+                "income": income,
+                "payWay": $("#payWay").val(),
+                "memo": $("#memo").val(),
+                "lesson": $("#lesson").val(),
+                "lesson": $("#lesson").val(),
+                "refundTime": $("#refundTime").val(),
+                "refund": $("#refund").val(),
+                "referrer": $("#referrer").val()
+
+            }, function (res) {
+                alert(res["msg"]);
+                if(res["error"]==0){
+                    var url = "{% url 'User:userList' %}";
+                    window.location.href = url;
+                }
+
+            });
+
+
+        }
+
+    </script>
+{% endblock %}

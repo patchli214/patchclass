@@ -14,6 +14,8 @@ urlpatterns = [
     url(r'^api_userEdit$', api_userEdit,name="api_userEdit"),
     url(r'^userSkill$', userSkill,name="userSkill"),
     url(r'^index$', index,name="index"),
+    url(r'^pay$', pay,name="pay"),
+    url(r'^api_pay$', api_pay,name="api_pay"),
 
 ]
 app_name = 'User'

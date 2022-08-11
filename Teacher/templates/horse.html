@@ -5,7 +5,7 @@
 <style>
   .container{background-color: transparent;}
 body{
-  background-image: url('/static/images/horse-20220714.jpg');
+  background-image: url('/static/images/{%if page == 'ermao' %}ermao{%else%}horse-20220714{%endif%}.jpg');
   background-size: 100%;
 }
 div{
@@ -24,10 +24,13 @@ div{
 <div class="datetime" id="date" style="padding-top:86px;"></div>
 <div class="datetime" id="time" style="padding-top:0px;"></div>
 <div class="datetime" id="dot" style="padding-top:6px;"><img class="dot" src="" /></div>
-<div class="datetime" style="width:92%;padding-top:228px;text-align:end;">11**************1X</div>
+{%if page == 'ermao'%}<div class="datetime" style="width:92%;padding-top:228px;text-align:end;">李*</div>{%endif%}
+<div class="datetime" style="width:92%;padding-top:{%if page == 'ermao'%}8{%else%}228{%endif%}px;text-align:end;">11**************{%if page == 'ermao'%}32{%else%}1X{%endif%}</div>
 <div class="datetime" id="checktime" style="width:92%;padding-top:8px;text-align:end;"></div>
 <div class="datetime" id="oktime" style="width:92%;padding-top:8px;text-align:end;padding-bottom:110px;color:rgb(219,57,62);"></div>
-
+{%if page == 'ermao'%}
+<img src="/static/images/ermao1.png" style="position:absolute;top:288;left:48;width:76px;"/>
+{%endif%}
 {% endblock %}
 
 {% block scripts %}
@@ -48,7 +51,7 @@ function currentTime(){
   var sec = today.getSeconds();if(sec<10)sec='0'+sec
 
   $('#time').html(hour+":"+min+":"+sec)
-  $('#checktime').html(month+"-"+day+' '+"04:47")
+  $('#checktime').html(month+"-"+day+' '+"{%if page == 'ermao'%}05:33{%else%}04:47{%endif%}")
   $('#oktime').html(month+"-"+day+' '+"24:00")
 
   let t = setTimeout(function(){ currentTime() }, 1000);
@@ -60,9 +63,9 @@ function dots(){
   $('#timer').html(timer)
   if(timer%2==0)
 
-      $('#dot').html("<img class='dot' src='/static/images/dot1{%if page == 'horse2'%}-green{%endif%}.png' />")
+      $('#dot').html("<img class='dot' src='/static/images/dot1{%if page == 'horse'%}-blue{%endif%}.png' />")
   else
-      $('#dot').html("<img class='dot' src='/static/images/dot2{%if page == 'horse2'%}-green{%endif%}.png' />")
+      $('#dot').html("<img class='dot' src='/static/images/dot2{%if page == 'horse'%}-blue{%endif%}.png' />")
   let t2 = setTimeout(function(){ dots() }, 700);
 }
 dots()

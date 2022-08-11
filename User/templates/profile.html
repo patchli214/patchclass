@@ -9,12 +9,19 @@
 {%if user%}
 <div  style="width:100%;margin:0 auto;font-size:20px;text-align:center;padding:6px;">{{user.name}} 的成长记录</div>
 {%if login_teacher%}<div>{{user.name2}} {{user.gender}} {{user.location}} {{user.birthday|date:"Y-m-d"}} 联系人：{{user.customer1}} (微信号：{{user.c1wechat}}）</div>
-<div style="padding-bottom:10px"><font class="yellowBackground">上课时间{%if user.timezone != 'Asia/Shanghai'%}({{user.timezone}}){%endif%}</font>
+
+{%if user.isReferrer == 1%}
+<tr>
+    <td></td>
+</tr>
+{%endif%}
+
+{%if classrooms%}<div style="padding-bottom:10px"><font class="yellowBackground">上课时间{%if user.timezone != 'Asia/Shanghai'%}({{user.timezone}}){%endif%}</font>{%endif%}
 {%for classTime in classrooms%}
 周{{classTime.lessonWeekday|week_name}}&nbsp;{{classTime.lessonTime}}&nbsp;|
 {%endfor%}
 </div>{%endif%}
-<div style="text-align:center;font-weight:bold;"><a href="{% url 'User:userSkill' %}?userId={{user.id}}">→ {技能分布}</a></div>
+{%if lessons%}<div style="text-align:center;font-weight:bold;"><a href="{% url 'User:userSkill' %}?userId={{user.id}}">→ {技能分布}</a></div>{%endif%}
 <div>
   {%for l in lessons%}
   <br>
