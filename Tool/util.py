@@ -52,19 +52,25 @@ def checkCookie(request):
 
 def checkCookie2(request):
     login = request.COOKIES.get('login', '')
+    
     if not (login):
         # return HttpResponseRedirect('/travel/login')
         return None
     login_user = User()
     if request.COOKIES.get('isTeacher', '') == '1':
+
         return None
-    login_user.login = login
-    login_user.name = request.COOKIES.get('name', '')
-    login_user.name2 = request.COOKIES.get('name2', '')
-    login_user.tel = request.COOKIES.get('tel', '')
-    login_user.c1wechat = request.COOKIES.get('wechat', '')
-    login_user.id = request.COOKIES.get('userid', '')
-    login_user.isTeacher = request.COOKIES.get('isTeacher', '')
+    try:
+        login_user.login = login
+        login_user.name = request.COOKIES.get('name', '')
+        login_user.name2 = request.COOKIES.get('name2', '')
+        login_user.tel = request.COOKIES.get('tel', '')
+        login_user.c1wechat = request.COOKIES.get('wechat', '')
+        login_user.id = request.COOKIES.get('userid', '')
+        login_user.isTeacher = request.COOKIES.get('isTeacher', '')
+
+    except Exception as e:
+        print(e)
     return login_user
 
 

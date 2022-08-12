@@ -51,9 +51,10 @@ def login(request):
 
             res = {"error": 0, "msg": "OK"}
             password_md5 = util.str2md5(password)
+
             if password_md5 == None:
                 res = {"error": 1, "msg": "非法字符"}
-            username = username.lower()
+            #username = username.lower()
 
             user = None
 
@@ -66,16 +67,18 @@ def login(request):
                 else:
                     isTeacher = True
             except:
-                users = User.objects.filter(login__exact=username).filter(pw__exact=password_md5)  # @UndefinedVariable
+                users = User.objects.filter(login=username).filter(pw=password_md5)  # @UndefinedVariable
                 try:
                     user = users.first()
                     if user.status == -1:
                         res = {"error": 1, "msg": "已注销"}
-                except:
+                except Exception as e:
                     res = {"error": 1, "msg": "用户名密码错误"}
 
 
             res_login = res
+            print('[isTeacher login------------------]')
+            print(isTeacher)
             if res_login["error"] == 0 and isTeacher:
 
                 response = HttpResponseRedirect('/Teacher/lessonPlan')
@@ -90,6 +93,7 @@ def login(request):
                 return response
             elif res_login["error"] == 0:
                 response = HttpResponseRedirect('/User/myRefers')
+                response.set_cookie('isTeacher', '0')
                 response.set_cookie('login',user.login)
                 response.set_cookie('userid', user.id)
                 response.set_cookie('name', user.name)

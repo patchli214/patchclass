@@ -1,0 +1,54 @@
+{% extends "base.html" %}
+{%load filter%}
+{% block content %}
+<style>
+  .h3p{width:100%;margin:10px 0 0 0 ;background-color:#eee;}
+  .input{font-size:18px;padding:5px;}
+  .inputTag{background:#dddddd;}
+</style>
+<div style="height:10px;"></div>
+<div class="input">改密码</div>
+
+<div class="input"><font class="inputTag">名字</font>&nbsp;{{login_user.name}}&nbsp;&nbsp;{{login_user.name2|default:''}}</div>
+
+
+
+<div class="input">密码<input id="pw" type="password" /></div>
+<div class="input">确认密码<input id="pw2" type="password" /></div>
+
+<div  onclick="savepw()" style="padding:20px;text-align:center;"><button style="width:80%;height:40px;">Save</button>
+{% endblock %}
+
+{% block scripts %}
+    <script>
+
+        function savepw() {
+
+          var pw = $("#pw").val();
+          var pw2 = $("#pw2").val();
+          if(pw!=pw2){
+                alert('密码不一致！');
+                return;
+          }
+          if(pw==''){
+                alert('密码不能空！');
+                return;
+          }
+
+            $.post("{% url 'User:api_changePW' %}", {
+                "userId":'{{login_user.id}}',
+                "pw": pw
+            }, function (res) {
+                alert(res["msg"]);
+                if(res["error"]==0){
+                    var url = "{% url 'User:myRefers' %}";
+                    window.location.href = url;
+                }
+
+            });
+
+
+        }
+
+    </script>
+{% endblock %}

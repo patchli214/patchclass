@@ -18,8 +18,33 @@ def index(request):
     return render(request, 'index.html', {})
 
 def myRefers(request):
-    return render(request, 'myRefers.html', {})
-    
+    login_user = util.checkCookie2(request)
+    if not (login_user):
+        return HttpResponseRedirect('/login')
+    return render(request, 'myRefers.html', {'login_user':login_user})
+
+def changePW(request):
+    login_user = util.checkCookie2(request)
+    if not (login_user):
+        return HttpResponseRedirect('/login')
+    return render(request, 'changePW.html', {'login_user':login_user})
+
+@csrf_exempt
+def api_changePW(request):
+    userId = request.POST.get("userId")
+    pw = request.POST.get("pw")
+    res = {"error": 0, "msg": "OK"}
+    try:
+        u = User.objects.get(id=userId)
+        u.pw = util.str2md5(pw)
+        u.save()
+
+    except Exception as e:
+
+        res = {"error": 1, "msg": str(e)}
+
+    return util.JSONResponse(json.dumps(res, ensure_ascii=False))
+
 def userList(request):
     login_teacher = util.checkCookie(request)
     if not (login_teacher):
