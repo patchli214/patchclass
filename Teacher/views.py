@@ -79,7 +79,7 @@ def login(request):
             if res_login["error"] == 0 and isTeacher:
 
                 response = HttpResponseRedirect('/Teacher/lessonPlan')
-
+                response.set_cookie('isTeacher', '1')
                 response.set_cookie('login', user.login.lower())
                 response.set_cookie('userid', user.id)
                 response.set_cookie('name', user.name)
@@ -89,7 +89,7 @@ def login(request):
 
                 return response
             elif res_login["error"] == 0:
-                response = HttpResponseRedirect('/User/userList')
+                response = HttpResponseRedirect('/User/myRefers')
                 response.set_cookie('login',user.login)
                 response.set_cookie('userid', user.id)
                 response.set_cookie('name', user.name)

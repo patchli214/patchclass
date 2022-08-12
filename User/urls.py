@@ -15,6 +15,7 @@ urlpatterns = [
     url(r'^userSkill$', userSkill,name="userSkill"),
     url(r'^index$', index,name="index"),
     url(r'^pay$', pay,name="pay"),
+    url(r'^myRefers$', myRefers,name="myRefers"),
     url(r'^api_pay$', api_pay,name="api_pay"),
 
 ]

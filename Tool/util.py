@@ -8,7 +8,7 @@ from time import mktime
 from geopy.geocoders import GeoNames
 import json,datetime,time
 from tzlocal import get_localzone
-from Tool.models import Teacher
+from Tool.models import Teacher,User
 from django.http import HttpResponse
 import hashlib
 import pytz
@@ -34,10 +34,12 @@ def str2md5(str):
 
 
 def checkCookie(request):
-    login_teacher = Teacher()
     login = request.COOKIES.get('login', '')
     if not (login):
         # return HttpResponseRedirect('/travel/login')
+        return None
+    login_teacher = Teacher()
+    if request.COOKIES.get('isTeacher', '') != '1':
         return None
     login_teacher.login = login
     login_teacher.name = request.COOKIES.get('name', '')
@@ -45,7 +47,26 @@ def checkCookie(request):
     login_teacher.tel = request.COOKIES.get('tel', '')
     login_teacher.wechat = request.COOKIES.get('wechat', '')
     login_teacher.id = request.COOKIES.get('userid', '')
+    login_teacher.isTeacher = request.COOKIES.get('isTeacher', '')
     return login_teacher
+
+def checkCookie2(request):
+    login = request.COOKIES.get('login', '')
+    if not (login):
+        # return HttpResponseRedirect('/travel/login')
+        return None
+    login_user = User()
+    if request.COOKIES.get('isTeacher', '') == '1':
+        return None
+    login_user.login = login
+    login_user.name = request.COOKIES.get('name', '')
+    login_user.name2 = request.COOKIES.get('name2', '')
+    login_user.tel = request.COOKIES.get('tel', '')
+    login_user.c1wechat = request.COOKIES.get('wechat', '')
+    login_user.id = request.COOKIES.get('userid', '')
+    login_user.isTeacher = request.COOKIES.get('isTeacher', '')
+    return login_user
+
 
 #TZName=None：Beijing时区
 #TZName=UTC：0时区

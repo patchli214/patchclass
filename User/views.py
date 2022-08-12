@@ -17,7 +17,9 @@ from django.utils.dateparse import parse_datetime
 def index(request):
     return render(request, 'index.html', {})
 
-
+def myRefers(request):
+    return render(request, 'myRefers.html', {})
+    
 def userList(request):
     login_teacher = util.checkCookie(request)
     if not (login_teacher):

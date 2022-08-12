@@ -38,6 +38,7 @@ class Teacher(Document):
 
 #学生，一个客户可关联多个学生
 class User(Document):
+    login = StringField()
     location = StringField() #城市英文，用于获取时区
     timezone = StringField() #时区名
     name = StringField()
