@@ -48,6 +48,13 @@
 <div class="input">退款金额&nbsp;<input id="refund" />
 
 <div  onclick="savepay()" style="padding:20px;text-align:center;"><button style="width:80%;height:40px;">Save</button>
+
+<div style="margin:20px 0 0 0;">
+    交费记录
+    {%for c in contracts%}
+    <div>{{c.payTime|date:"Y-m-d"}} {{c.income}}元 [{{c.payWay}}] {{c.memo}}</div>
+    {%endfor%}
+
 {% endblock %}
 
 {% block scripts %}
@@ -61,7 +68,7 @@
                 alert('缴费时间不能空！');
                 return;
           }
-          if(name==''){
+          if(income==''){
                 alert('金额不能空！');
                 return;
           }

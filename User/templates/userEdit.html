@@ -13,9 +13,11 @@
 <div class="input">
     location&nbsp;<input id="location" value="{{user.location|default:''}}" />
     referrer&nbsp;<select id="referrer"><option value="0" selected>请选择</option>
+    {%if refs and user.referrer%}
         {%for ref in refs%}
       <option value="{{ref.id}}" {%if user.referrer == ref.id|stringformat:"s"%}selected{%endif%} >{{ref.name}}</option>
         {%endfor%}
+    {%endif%}
     </select>
 </div>
 <div class="input">timezone&nbsp;<input id="timezone" value="{{user.timezone|default:''}}" /></div>

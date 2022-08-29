@@ -10,7 +10,7 @@ from django import forms
 from django.views.decorators.csrf import  csrf_exempt
 from django.http import HttpResponse,HttpResponseRedirect
 from django.shortcuts import render
-from Tool.models import Teacher, Classroom, User,Lesson, Course, UserLesson
+from Tool.models import Teacher, Classroom, User,Lesson, Course, UserLesson,Contract
 from mongoengine.queryset.visitor import Q
 from django.utils.dateparse import parse_datetime
 
@@ -21,7 +21,12 @@ def myRefers(request):
     login_user = util.checkCookie2(request)
     if not (login_user):
         return HttpResponseRedirect('/login')
-    return render(request, 'myRefers.html', {'login_user':login_user})
+    users = []
+    try:
+        users = User.objects.filter(referrer=login_user.id)
+    except:
+        err = 1
+    return render(request, 'myRefers.html', {'login_user':login_user,'users':users})
 
 def changePW(request):
     login_user = util.checkCookie2(request)
@@ -98,9 +103,7 @@ def userList(request):
             except Exception, e:
                 print(e)
                 u.referrerName = ''
-        if u.referrer:
-            print('[u.referrer-----------]')
-            print(u.referrerName)
+
         temp.append(u)
     users = temp
     return render(request, 'userList.html', {"login_teacher":login_teacher,"users":users,
@@ -112,12 +115,13 @@ def pay(request):
         return HttpResponseRedirect('/login')
     userId = request.GET.get("userId")
     user = None
+    contracts = []
     try:
         user = User.objects.get(id=userId)  # @UndefinedVariable
         grade = getGrade(user.gradeOneYear)
         if grade:
             user.grade = str(grade)
-
+        contracts = Contract.objects.filter(user=user.id)
     except:
         user = None
     refs = None
@@ -127,7 +131,7 @@ def pay(request):
     except:
         refs = None
     #return render(request, 'userEdit.html')
-    return render(request, 'pay.html', {"login_teacher":login_teacher,"grades":constant.GRADE,"refs":refs,"user":user})
+    return render(request, 'pay.html', {"login_teacher":login_teacher,"grades":constant.GRADE,"refs":refs,"user":user,"contracts":contracts})
 
 @csrf_exempt
 def api_pay(request):
@@ -139,6 +143,7 @@ def api_pay(request):
     userId = request.POST.get("userId")
     payWay = request.POST.get("payWay")
     payTime = request.POST.get("payTime")
+
     income = request.POST.get("income")
     refundTime = request.POST.get("refundTime")
     lesson = request.POST.get("lesson")
@@ -152,10 +157,14 @@ def api_pay(request):
         return util.JSONResponse(json.dumps(res, ensure_ascii=False))
 
     ptime = None
+    rtime = None
+    status = 0
+    isReferrer = 0
     try:
-        ptime = util.local_to_utc(payTime,"Asia/Shanghai")
+        ptime = util.local_to_utc(payTime+' 00:00:00',"Asia/Shanghai")
+        status = 1
     except:
-        res = {"error": 1, "msg": "no pay time"}
+        res = {"error": 1, "msg": "pay time err"}
         return util.JSONResponse(json.dumps(res, ensure_ascii=False))
     inc = 0
     try:
@@ -198,8 +207,10 @@ def api_pay(request):
     cont.income = inc
     cont.memo = memo
     cont.payWay = payWay
+
     if rtime:
         cont.refundTime = rtime
+        status = 2
     if refund and refund != '':
         refu = 0
         try:
@@ -209,8 +220,9 @@ def api_pay(request):
             return util.JSONResponse(json.dumps(res, ensure_ascii=False))
         cont.refund = refu
 
+    cont.save()
     user.status = status
-    user.isReferrer = isReferrer
+    #user.isReferrer = isReferrer
     if ref:
         user.referrer = str(ref.id)
     else:
@@ -234,12 +246,13 @@ def userEdit(request):
             user.grade = str(grade)
 
     except:
-        user = None
+        user = User()
     refs = None
     try:
         query = Q(isReferrer=1)&Q(id__ne=userId)
         refs = User.objects.filter(query)
-    except:
+    except Exception as e:
+        print(e)
         refs = None
     #return render(request, 'userEdit.html')
     return render(request, 'userEdit.html', {"login_teacher":login_teacher,"grades":constant.GRADE,"refs":refs,"user":user})

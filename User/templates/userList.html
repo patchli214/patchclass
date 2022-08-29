@@ -39,7 +39,7 @@
     <td>{{user.referrerName|default:""}}</td>
     <td><a target="_blank" href="{% url 'User:profile' %}?userId={{user.id}}">{{user.lessons|default:''}}</a></td>
     <td>{%if user.inClass == 1%}是{%endif%}</td>
-    <td><button class="payButton" id="{{user.id}}">{{user.name}}</button>
+    <td><button class="payButton" id="{{user.id}}" {% if user.status == 1 %}style="background-color: #4CAF50;"{%endif%}">{{user.status}}-{{user.name}}</button>
   </tr>
   {%endfor%}
   </tbody>
