@@ -18,6 +18,7 @@ class Teacher(Document):
     email = StringField()
     memo = StringField()
     status = StringField() #-1:离职
+    timezone = StringField() #时区名
     meta = {'collection':'Teacher'}
 
 #付费者、学生联系人（客户）

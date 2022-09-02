@@ -89,6 +89,7 @@ def login(request):
                 response.set_cookie('name2', user.name2)
                 response.set_cookie('wechat',user.wechat)
                 response.set_cookie('tel',user.tel)
+                response.set_cookie('timezone',user.timezone)
 
                 return response
             elif res_login["error"] == 0:
@@ -100,6 +101,7 @@ def login(request):
                 response.set_cookie('name2', user.name2)
                 response.set_cookie('wechat',user.wechat)
                 response.set_cookie('tel',user.tel)
+                response.set_cookie('timezone',user.timezone)
                 return response
             else:
                 response = HttpResponseRedirect('/login?wrongLogin=1')
@@ -118,7 +120,7 @@ def editClass(request):
     try:
         classroom = Classroom.objects.get(id=classroomId)  # @UndefinedVariable
     except:
-        classroom = None
+        classroom = Classroom()
 
     query = Q(status=1)
     if classroom:

@@ -5,9 +5,10 @@ Created on Sep 15, 2020
 
 @author: patch
 '''
-
+#import datetime
 from django import template
-from Tool import constant
+from Tool import constant,util
+from Tool.models import Teacher, User
 from django.template.defaultfilters import stringfilter
 
 
@@ -29,7 +30,7 @@ def week_name(value):
 @register.filter
 @stringfilter
 def get_name(key,type):
-  try:  
+  try:
     if type=='lan':
         return constant.LAN[key]
     if type=='skill':
@@ -50,5 +51,13 @@ def get_name(key,type):
       print (e)
       return ''
 
-    
 
+
+@register.filter
+def get_localtime(utc_dt,timezone):
+    t = None
+    if timezone and len(timezone) > 1:
+        t = util.utc_to_local(utc_dt,timezone)
+    else:
+        t = util.utc_to_local(utc_dt,None)
+    return t.strftime("%Y-%m-%d")

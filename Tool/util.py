@@ -52,7 +52,7 @@ def checkCookie(request):
 
 def checkCookie2(request):
     login = request.COOKIES.get('login', '')
-    
+
     if not (login):
         # return HttpResponseRedirect('/travel/login')
         return None

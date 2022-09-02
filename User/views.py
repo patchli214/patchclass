@@ -114,24 +114,35 @@ def pay(request):
     if not (login_teacher):
         return HttpResponseRedirect('/login')
     userId = request.GET.get("userId")
+
     user = None
     contracts = []
+    contract = Contract()
+    contractId = request.GET.get("contractId")
     try:
-        user = User.objects.get(id=userId)  # @UndefinedVariable
+        user = User.objects.get(id=userId)
         grade = getGrade(user.gradeOneYear)
         if grade:
             user.grade = str(grade)
         contracts = Contract.objects.filter(user=user.id)
-    except:
+    except Exception as e:
+        print(e)
         user = None
+    try:
+        contract = Contract.objects.get(id=contractId)
+    except:
+        contract = Contract()
     refs = None
+
     try:
         query = Q(isReferrer=1)&Q(id__ne=userId)
         refs = User.objects.filter(query)
     except:
         refs = None
     #return render(request, 'userEdit.html')
-    return render(request, 'pay.html', {"login_teacher":login_teacher,"grades":constant.GRADE,"refs":refs,"user":user,"contracts":contracts})
+    return render(request, 'pay.html', {"login_teacher":login_teacher,
+           "grades":constant.GRADE,"refs":refs,"user":user,"contracts":contracts,
+           "contract":contract})
 
 @csrf_exempt
 def api_pay(request):
@@ -143,6 +154,7 @@ def api_pay(request):
     userId = request.POST.get("userId")
     payWay = request.POST.get("payWay")
     payTime = request.POST.get("payTime")
+    validDate = request.POST.get("validDate")
 
     income = request.POST.get("income")
     refundTime = request.POST.get("refundTime")
@@ -156,8 +168,9 @@ def api_pay(request):
         res = {"error": 1, "msg": "no pay amount"}
         return util.JSONResponse(json.dumps(res, ensure_ascii=False))
 
-    ptime = None
-    rtime = None
+    ptime = None #交费之间
+    vtime = None #课程结束时间
+    rtime = None #退费时间
     status = 0
     isReferrer = 0
     try:
@@ -166,6 +179,18 @@ def api_pay(request):
     except:
         res = {"error": 1, "msg": "pay time err"}
         return util.JSONResponse(json.dumps(res, ensure_ascii=False))
+    if refundTime and len(refundTime) > 1:
+        try:
+          rtime = util.local_to_utc(refundTime+' 00:00:00',"Asia/Shanghai")
+          status = 2
+        except:
+          res = {"error": 1, "msg": "refund time err"}
+          return util.JSONResponse(json.dumps(res, ensure_ascii=False))
+    try:
+        vtime = util.local_to_utc(validDate+' 00:00:00',"Asia/Shanghai")
+        status = 1
+    except:
+        err = 1
     inc = 0
     try:
         inc = int(income)
@@ -204,21 +229,23 @@ def api_pay(request):
             return util.JSONResponse(json.dumps(res, ensure_ascii=False))
     cont.user = user
     cont.payTime = ptime
+    cont.validDate = vtime
     cont.income = inc
+    cont.lesson = lessonAmount
     cont.memo = memo
     cont.payWay = payWay
 
     if rtime:
         cont.refundTime = rtime
         status = 2
-    if refund and refund != '':
-        refu = 0
-        try:
-            refu = int(refund)
-        except:
-            res = {"error": 1, "msg": "refund amount number err"}
-            return util.JSONResponse(json.dumps(res, ensure_ascii=False))
-        cont.refund = refu
+        if refund and refund != '':
+            refu = 0
+            try:
+                refu = int(refund)
+            except:
+                res = {"error": 1, "msg": "refund amount number err"}
+                return util.JSONResponse(json.dumps(res, ensure_ascii=False))
+            cont.refund = refu
 
     cont.save()
     user.status = status

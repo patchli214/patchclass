@@ -1,6 +1,9 @@
 {% extends "base.html" %}
 {%load filter%}
 {% block content %}
+{% load tz %}
+{% localtime on %}
+
 <style>
   .h3p{width:100%;margin:10px 0 0 0 ;background-color:#eee;}
   .input{font-size:18px;padding:5px;}
@@ -32,28 +35,33 @@
 <div class="input"><font class="inputTag">微信</font>&nbsp;{{user.c1wechat|default:''}}</div>
 
 
-<div class="input">缴费时间&nbsp;<input id="payTime" />
-  方式<select id="payWay"><option value="wechat" {%if userPay.way == 'wechat'%}selected{%endif%}>微信</option>
-  <option value="alipay" {%if userPay.way == 1%}selected{%endif%}>支付宝</option>
-  <option value="bank" {%if userPay.way == 2%}selected{%endif%}>银行</option>
-  <option value="other" {%if userPay.way == 2%}selected{%endif%}>其他</option>
+<div class="input">缴费时间&nbsp;<input id="payTime" {%if contract.payTime %} value="{{contract.payTime|get_localtime:login_teacher.timezone}}" {%endif%} />
+  方式<select id="payWay"><option value="wechat" {%if contract.payWay == 'wechat'%}selected{%endif%}>微信</option>
+  <option value="alipay" {%if contract.payWay == 'alipay'%}selected{%endif%}>支付宝</option>
+  <option value="bank" {%if contract.payWay == 'bank'%}selected{%endif%}>银行</option>
+  <option value="other" {%if contract.payWay == 'other'%}selected{%endif%}>其他</option>
 </select>
 </div>
-<div class="input">金额&nbsp;<input id="income" />
-<div class="input">课次&nbsp;<input id="lesson" />
-<div class="input">截止时间&nbsp;<input id="validDate" />
-<div class="input">备注&nbsp;<input id="memo" />
+<div class="input">金额&nbsp;<input id="income"  value="{{contract.income|default:""}}"/>
+<div class="input">课次&nbsp;<input id="lesson" value="{{contract.lesson|default:""}}"/>
+<div class="input">截止时间&nbsp;<input id="validDate"  {%if contract.validDate %}value="{{contract.validDate|get_localtime:login_teacher.timezone}}" {%endif%} />
+<div class="input">备注&nbsp;<input id="memo" value="{{contract.memo|default:""}}"/>
     <hr />
 <div class="input">退款时间&nbsp;<input id="refundTime" />
 <div class="input">退款金额&nbsp;<input id="refund" />
 
-<div  onclick="savepay()" style="padding:20px;text-align:center;"><button style="width:80%;height:40px;">Save</button>
+<div  onclick="savepay()" style="padding:20px;text-align:center;"><button style="width:80%;height:40px;">Save</button></div>
 
 <div style="margin:20px 0 0 0;">
     交费记录
     {%for c in contracts%}
-    <div>{{c.payTime|date:"Y-m-d"}} {{c.income}}元 [{{c.payWay}}] {{c.memo}}</div>
+    <div><a href="{% url 'User:pay' %}?userId={{user.id}}&contractId={{c.id}}">{{c.payTime|get_localtime:login_teacher.timezone}} {{c.income}}元 [{{c.payWay}}] {{c.memo}}</a></div>
     {%endfor%}
+</div>
+
+
+
+{% endlocaltime %}
 
 {% endblock %}
 
@@ -74,8 +82,10 @@
           }
 
             $.post("{% url 'User:api_pay' %}", {
+                {%if contract%}"payId":'{{contract.id}}',{%endif%}
                 "userId":'{{user.id}}',
                 "payTime": payTime,
+                "validDate": $("#validDate").val(),
                 "income": income,
                 "payWay": $("#payWay").val(),
                 "memo": $("#memo").val(),
