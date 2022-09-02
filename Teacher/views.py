@@ -122,7 +122,7 @@ def editClass(request):
     except:
         classroom = Classroom()
 
-    query = Q(status=1)
+    query = Q(status__gt=0)
     if classroom:
         for u in classroom.users:
             query = query&Q(id__ne=u.id)
@@ -135,7 +135,7 @@ def editClass(request):
     week_list = range(1, 8)
     teachers = Teacher.objects.all()  # @UndefinedVariable
     lans = constant.LAN
-    print(lans)
+
     return render(request, 'editClass.html', {"login_teacher":login_teacher,"classroom":classroom,
                                               "students":students,"classStudents":classStudents,
                                               'week_list':week_list,"teachers":teachers,"lans":lans,

@@ -13,11 +13,11 @@
 <div class="input">
     location&nbsp;<input id="location" value="{{user.location|default:''}}" />
     referrer&nbsp;<select id="referrer"><option value="0" selected>请选择</option>
-    {%if refs and user.referrer%}
+    
         {%for ref in refs%}
       <option value="{{ref.id}}" {%if user.referrer == ref.id|stringformat:"s"%}selected{%endif%} >{{ref.name}}</option>
         {%endfor%}
-    {%endif%}
+
     </select>
 </div>
 <div class="input">timezone&nbsp;<input id="timezone" value="{{user.timezone|default:''}}" /></div>
@@ -40,7 +40,8 @@
 <div class="input">status&nbsp;<select id="status">
   <option value="0" {%if user.status == 0%}selected{%endif%}>free</option>
   <option value="1" {%if user.status == 1%}selected{%endif%}>缴费</option>
-  <option value="2" {%if user.status == 2%}selected{%endif%}>学完</option>
+  <option value="2" {%if user.status == 2%}selected{%endif%}>未缴</option>
+  <option value="3" {%if user.status == 3%}selected{%endif%}>学完</option>
 </select>
 </div>
 

@@ -133,7 +133,6 @@ def pay(request):
     except:
         contract = Contract()
     refs = None
-
     try:
         query = Q(isReferrer=1)&Q(id__ne=userId)
         refs = User.objects.filter(query)
@@ -219,7 +218,10 @@ def api_pay(request):
         ref = None
 
     cont = None
-    if not payId or payId == '':
+    print('[payId--------------]')
+    print(payId)
+    if not payId or payId == '' or payId == 'None':
+        print('[NO----payId--------------]')
         cont = Contract()
     else:
         try:
