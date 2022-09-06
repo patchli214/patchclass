@@ -274,16 +274,24 @@ def userEdit(request):
         if grade:
             user.grade = str(grade)
 
-    except:
+    except Exception as e:
+        print('[user errrrrrrr]')
+        print(e)
         user = User()
-    refs = None
+    temp = []
+    refs = []
     try:
         query = Q(isReferrer=1)&Q(id__ne=userId)
+        if not user.name:
+            query = Q(isReferrer=1)
         refs = User.objects.filter(query)
+
     except Exception as e:
+        print('[refs errrrrrrr]')
         print(e)
-        refs = None
+        refs = []
     #return render(request, 'userEdit.html')
+
     return render(request, 'userEdit.html', {"login_teacher":login_teacher,"grades":constant.GRADE,"refs":refs,"user":user})
 
 @csrf_exempt
