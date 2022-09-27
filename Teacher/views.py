@@ -233,7 +233,6 @@ def lessonPlan(request):
     i = 0
     date = None
     courses = util.userCoursePlan(1)
-    print(courses)
     for c in lessonPlans:
         if lastDay != c.lessonWeekday:
             date = begin + datetime.timedelta(days=i)
@@ -254,20 +253,23 @@ def lessonPlan(request):
 
         lesson = None
         try:
-
             query = Q(classroom=c.id)&Q(lessonDate__gte=begin)&Q(lessonDate__lte=end)
-
             lessons = Lesson.objects.filter(query)  # @UndefinedVariable
-
             if len(lessons) > 0:
                 lesson = lessons[0]
                 lesson.lessonDate = util.utc_to_local(lesson.lessonDate, None)
-
             c.lesson = lesson
-
+            try:
+                query = Q(lesson=lesson.id)
+                userLessons = UserLesson.objects.filter(query)
+                c.userLessons = userLessons
+            except Exception as e:
+                print(e)
+                c.userLessons = []
         except Exception as e:
             print(e)
             c.lesson = Lesson()
+
         c.code = '1-' + str(c.lessonWeekday)+'-'+c.lessonTime
         c.courseNo = courses[c.code]
 

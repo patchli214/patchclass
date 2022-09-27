@@ -54,7 +54,7 @@
   <p onclick="goCheckin('{{plan.id}}','{{plan.lesson.id}}','{{plan.date|date:"Y-m-d"}}T{{plan.date|date:"H:i"}}')" style="cursor:pointer;background-color:white;">{%if plan.lesson %}{<b>{{plan.lesson.course.name}}</b>}{%else%}&nbsp;{%endif%}</p>
   {% endtimezone %}
   {% endlocaltime %}
-  <p>{%for u in plan.users%}<a href="javascript:goUser('{{u.id}}')">{{u.name}}</a>&nbsp;{%if forloop.counter == 3%}<br>{%endif%}{% endfor %}
+  <p>{%for u in plan.users%}<a href="javascript:goUser('{{u.id}}')">{%for ul in plan.userLessons%}{%if ul.user.id == u.id%}<font style="color:rgb(209,1,141);">{%endif%}{%endfor%}{{u.name}}{%for ul in plan.userLessons%}{%if ul.user.id == u.id%}</font>{%endif%}{%endfor%}</a>&nbsp;{%if forloop.counter == 3%}<br>{%endif%}{% endfor %}
   </p>
 
   {%endfor%}
