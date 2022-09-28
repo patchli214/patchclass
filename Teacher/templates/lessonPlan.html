@@ -55,6 +55,7 @@
   {% endtimezone %}
   {% endlocaltime %}
   <p>{%for u in plan.users%}<a href="javascript:goUser('{{u.id}}')">{%for ul in plan.userLessons%}{%if ul.user.id == u.id%}<font style="color:rgb(209,1,141);">{%endif%}{%endfor%}{{u.name}}{%for ul in plan.userLessons%}{%if ul.user.id == u.id%}</font>{%endif%}{%endfor%}</a>&nbsp;{%if forloop.counter == 3%}<br>{%endif%}{% endfor %}
+     {%for ex in plan.extra%}<a href="javascript:goUser('{{ex.id}}')"><font style="color:rgb(209,1,141);">{{ex.name}}</font></a>&nbsp;{%endfor%}
   </p>
 
   {%endfor%}

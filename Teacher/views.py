@@ -224,7 +224,8 @@ def lessonPlan(request):
     end = end.replace(second=59)
     isThisWeek = True
 
-    query = Q(teacher=login_teacher.id)&Q(users__ne=None)
+    #query = Q(teacher=login_teacher.id)&Q(users__ne=None)
+    query = Q(teacher=login_teacher.id)
     lessonPlans = Classroom.objects.filter(query).order_by('lessonWeekday','lessonTime')  # @UndefinedVariable
     all = []
 
@@ -232,7 +233,7 @@ def lessonPlan(request):
     temp = []
     i = 0
     date = None
-    courses = util.userCoursePlan(1)
+    #courses = util.userCoursePlan(1)
     for c in lessonPlans:
         if lastDay != c.lessonWeekday:
             date = begin + datetime.timedelta(days=i)
@@ -248,10 +249,10 @@ def lessonPlan(request):
             except Exception as e:
                 print(e)
             lastDay = c.lessonWeekday
-
         c.date = date#util.utc_to_local(date, None)
 
         lesson = None
+        extra = []
         try:
             query = Q(classroom=c.id)&Q(lessonDate__gte=begin)&Q(lessonDate__lte=end)
             lessons = Lesson.objects.filter(query)  # @UndefinedVariable
@@ -263,17 +264,26 @@ def lessonPlan(request):
                 query = Q(lesson=lesson.id)
                 userLessons = UserLesson.objects.filter(query)
                 c.userLessons = userLessons
+                for ul in userLessons:
+                    has = 0
+                    for u in c.users:
+                        if u.id == ul.user.id:
+                            has = 1
+                            break
+                    if has == 0:
+                        extra.append(ul.user)
+                c.extra = extra
             except Exception as e:
                 print(e)
                 c.userLessons = []
         except Exception as e:
             print(e)
             c.lesson = Lesson()
-
         c.code = '1-' + str(c.lessonWeekday)+'-'+c.lessonTime
-        c.courseNo = courses[c.code]
+        #c.courseNo = courses[c.code]
+        if lesson or len(c.users) > 0:
+            temp.append(c)
 
-        temp.append(c)
 
     all.append(temp)
 #
