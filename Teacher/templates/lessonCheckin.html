@@ -31,6 +31,7 @@
 {%if users%}
 <div style="">
   课堂记录<textarea id="memo" rows="4" cols="80">{{lesson.memo|default:""}}</textarea>
+  <input type="checkbox" id="checkAll"/>全选
 </div>
 {%endif%}
 {%for student in users%}
@@ -59,6 +60,11 @@
 
 {% block scripts %}
 <script>
+
+    $('#checkAll').click(function() {
+        $("input[type=checkbox]").prop('checked',this.checked);
+    });
+
   function changeCourse(){
 
     var courseId = $("#courseId").val();
