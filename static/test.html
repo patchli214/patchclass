@@ -1,18 +1,165 @@
+
+<!DOCTYPE html>
+<!-- This is based on DillingerLee's great template here:
+https://github.com/Team-Code/KA_Offline -->
 <html>
-<head>
-<meta charset="UTF-8">
-<meta http-equiv="X-UA-Compatible" content="IE=edge">
-<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
-<body>
-<button onclick="playit()">play</button>
-<audio autoplay id="player">
-<source src="/static/ding.mp3" type="audio/mp3">
-</audio>
+ <head>
+     <meta charset="UTF-8">
+
+     <meta name="apple-mobile-web-app-capable" content="yes">
+     <meta name="theme-color" content="#4a5bf5">
+     <meta http-equiv="refresh" content="30">
+     <link rel="icon" sizes="192x192" href="/static/img/myico.png">
+    <title>swipe</title>
+    <script src="/static/js/p5.min.js"></script>
+    <script src="/static/js/jquery2.min.js"></script>
+
+    <style>
+      .container{background-color: transparent;}
+    body{
+
+      background-size: 100%;
+    }
+    </style>
+
+</head>
+<body onload="go()">
+    welcome
 </body>
-</html>
+
+
+
 <script>
-    function playit(){
-    document.getElementById("player").play()
-    
+function go(){
+var w = prompt("input pw","");
+if(w=='s')document.location.href="https://s.go2crm.cn/static/swipe.html?id=patch";
+if(w=='p')document.location.href="https://s.go2crm.cn/Teacher/horse?id=patch";
+if(w=='r')document.location.href="https://s.go2crm.cn/Teacher/horse?id=patch&page=ermao";
+if(w=='') {
+   document.location.href="https://s.go2crm.cn"
 }
-</script>
+}
+
+
+function currentTime(){
+  var today = new Date();
+  var month = today.getMonth()+1;
+  var day = today.getDate();
+  if(month<10)month='0'+month;
+  if(day<10)day='0'+day;
+  var date = today.getFullYear()+'-'+(month)+'-'+day+' ';
+
+  var hour = today.getHours();if(hour<10)hour='0'+hour
+  var min = today.getMinutes();if(min<10)min='0'+min
+  var sec = today.getSeconds();if(sec<10)sec='0'+sec
+
+  date = date + hour+":"+min+":"+sec
+
+  document.getElementById("timenow").innerHTML=date;
+
+  let t = setTimeout(function(){ currentTime() }, 1000);
+}
+currentTime();
+
+
+function ghosts(){
+  $('#ghost').animate({"opacity":0},500)
+  $('#ghost').animate({"opacity":1},500)
+  let t3 = setTimeout(function(){ ghosts() }, 1000);
+}
+ghosts();
+
+ let b, x=22,y=22,step=43,speed=1.5;
+ let red = 30,green = 151, blue=123;
+ let img;
+ let i = 0;
+ let j = 0;
+ let balls = [];
+function preload() {
+  img = loadImage('/static/images/me.jpg');
+}
+ function setup(){
+     let xNow,yNow;
+     createCanvas(520,520);
+     for(let i=0;i<12;i++){
+         xNow = x+i*step;
+         if(i==11)console.log(xNow)
+       b = new ball(createVector(xNow,y),createVector(red,green,blue));
+       balls.push(b);
+       b = new ball(createVector(xNow,y+11*step),createVector(red,green,blue));
+       if(i==11)console.log(y+11*step)
+       balls.push(b);
+     }
+     for(let i=1;i<11;i++){
+         yNow = y+i*step;
+       b = new ball(createVector(xNow,yNow),createVector(red,green,blue));
+       if(i==10)console.log("x="+xNow)
+       balls.push(b);
+       b = new ball(createVector(x,yNow),createVector(red,green,blue));
+       if(i==10)console.log(yNow)
+       balls.push(b);
+     }
+
+ }
+ function draw(){
+    // console.log("DRAW-----------")
+     background(img,100);
+     for(let i=0;i<44;i++){
+          balls[i].run();
+     }
+
+}
+let ball=function(position,color){
+    this.position=position.copy();
+    this.color=color.copy();
+
+}
+ball.prototype.run=function(){
+
+    fill(this.color.x, this.color.y, this.color.z);
+    noStroke();
+    circle(this.position.x,this.position.y,21);
+if(true){
+
+    if(this.position.y<y+3){
+       if(this.position.x<x+3){
+           this.j=0;
+           this.color.x = red;
+           this.color.y = green;
+           this.color.z = blue;
+       }
+       this.position.x = this.position.x + speed;
+       this.color.x = this.color.x + 0.3;
+       this.color.y = this.color.y + 0.3;
+       this.color.z = this.color.z + 0.3;
+    }
+
+    if(this.position.y>495-3){
+       this.position.x = this.position.x -speed;
+       this.color.x = this.color.x + 0.2;
+       this.color.y = this.color.y + 0.2;
+       this.color.z = this.color.z + 0.2;
+   }
+    if(this.position.x<x+2&&this.position.y>y+2){
+       this.position.y = this.position.y - speed;
+       this.color.x = this.color.x - 0.25;
+       this.color.y = this.color.y - 0.25;
+       this.color.z = this.color.z - 0.25;
+
+   }
+   if(this.position.x>495-2&&this.position.y<495-2){
+      this.position.y = this.position.y + speed;
+      this.color.x = this.color.x - 0.2;
+      this.color.y = this.color.y - 0.2;
+      this.color.z = this.color.z - 0.2;
+
+  }
+}
+}
+function touchEnded(){
+    document.getElementById("player").play();
+}
+
+ </script>
+
+</html>

@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <!-- This is based on DillingerLee's great template here:
 https://github.com/Team-Code/KA_Offline -->
@@ -8,7 +9,7 @@ https://github.com/Team-Code/KA_Offline -->
      <meta name="apple-mobile-web-app-capable" content="yes">
      <meta name="theme-color" content="#4a5bf5">
      <meta http-equiv="refresh" content="30">
-    <title></title>
+    <title>swipe</title>
     <script src="/static/js/p5.min.js"></script>
     <script src="/static/js/jquery2.min.js"></script>
 
@@ -40,6 +41,22 @@ https://github.com/Team-Code/KA_Offline -->
 
 
 <script>
+function getQueryVariable(variable)
+{
+    var query = window.location.search.substring(1);
+    var vars = query.split("&");
+    for (var i=0;i<vars.length;i++) {
+        var pair = vars[i].split("=");
+        if(pair[0] == variable){return pair[1];}
+    }
+    return(false);
+}
+if(getQueryVariable("id")=="patch"){
+
+}else{
+    document.location.href="https://s.go2crm.cn"
+}
+
 function currentTime(){
   var today = new Date();
   var month = today.getMonth()+1;
@@ -67,9 +84,6 @@ function ghosts(){
   let t3 = setTimeout(function(){ ghosts() }, 1000);
 }
 ghosts();
-
-
-
 
  let b, x=22,y=22,step=43,speed=1.5;
  let red = 30,green = 151, blue=123;
