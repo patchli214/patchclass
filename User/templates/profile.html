@@ -27,8 +27,7 @@
   <br>
 
   【{{forloop.revcounter}}】
-  <a style="cursor:point;" href="{% url 'User:work' %}?userId={{l.user.id}}&lessonId={{l.lesson.id}}" >
-  → {{l.lessonDate|date:"Y-m-d"}}&nbsp;{{l.lesson.course.name}}</a><br>
+  {{l.lessonDate|date:"Y-m-d"}}&nbsp;{{l.lesson.course.name}}<br>
   <div style="width:100%;margin:0 auto;text-align:center;">
     {%if l.mediaType == 'video' %}
     <video width="320" height="240" controls poster="{{l.work}}">
