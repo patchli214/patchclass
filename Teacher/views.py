@@ -345,6 +345,7 @@ def lessonCheckin(request):
             users.append(u)
     return render(request, 'lessonCheckin.html', {"login_teacher":login_teacher,"lesson":lesson,"course":course,
                                                   "classroom":classroom,"courses":temp,"lessonDate":lessonDate,
+                                                  "searchDay":request.GET.get("searchDay"),
                                                   "users":users})
 
 

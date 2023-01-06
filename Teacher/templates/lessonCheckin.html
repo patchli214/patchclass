@@ -142,7 +142,7 @@ function checkin(){
   }, function (res) {
       if (res["error"] == 0) {
           alert("成功");
-          var url = "{% url 'Teacher:lessonPlan' %}";
+          var url = "{% url 'Teacher:lessonPlan' %}"+"?searchDay={{searchDay}}";
           window.location.href = url;
       } else {
           alert("失败:" + res["msg"])

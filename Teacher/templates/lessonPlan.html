@@ -92,7 +92,7 @@ $( "#left" ).click(function(){
 
 function goCheckin(classroomId,lessonId,lessonDate){
   console.log(lessonDate);
-  var para = "?classroomId="+classroomId+"&lessonDate="+lessonDate
+  var para = "?classroomId="+classroomId+"&lessonDate="+lessonDate+"&searchDay={{searchDay}}"
   if(lessonId!="")
       para = para + "&lessonId="+lessonId
   document.location.href="{% url 'Teacher:lessonCheckin' %}"+para
