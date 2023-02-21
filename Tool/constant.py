@@ -9,7 +9,9 @@ from collections import OrderedDict
 CITIES = OrderedDict()
 LAN = OrderedDict([
     ('01',u'Scratch'),
+    ('02',u'MicroBlocks'),
     ('03',u'Scratch-Microbit'),
+    ('04',u'Snap'),
     ('05',u'Makecode'),
     ('20',u'Arduino'),
     ('07',u'JavaScript'),
